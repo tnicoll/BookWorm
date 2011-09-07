@@ -1,15 +1,23 @@
 package com.tnicoll.apps.bookworm;
 
 import java.awt.BorderLayout;
-import java.awt.Desktop;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.*;
+import java.net.ContentHandler;
+import java.util.NavigableSet;
 
 import javax.swing.*;
+
+import org.apache.tika.Tika;
+import org.apache.tika.exception.TikaException;
+import org.apache.tika.metadata.Metadata;
+import org.apache.tika.parser.*;
+import org.apache.tika.sax.BodyContentHandler;
+
 
 
 
@@ -144,8 +152,29 @@ public class BookWormMain extends javax.swing.JFrame
 	            int returnVal = fc.showOpenDialog(BookWormMain.this);
 
 	            if (returnVal == JFileChooser.APPROVE_OPTION) {
-	                File file = fc.getSelectedFile();
-	                //Open File
+	            	File file = fc.getSelectedFile();
+	            	
+					try (InputStream stream = new FileInputStream(file);){
+
+	            	BodyContentHandler handler = new BodyContentHandler();
+	            	Metadata metadata = new Metadata();
+	                AutoDetectParser parser = new AutoDetectParser();
+	                parser.parse(stream, handler, metadata);
+	                String content = handler.toString();
+//	                System.out.println("Mime: " + metadata.get(Metadata.CONTENT_TYPE));
+//	                System.out.println("Title: " + metadata.get(Metadata.TITLE));
+//	                System.out.println("Word count: " + metadata.get(Metadata.WORD_COUNT));
+//	                System.out.println("Paragraph count: " +  metadata.get(Metadata.PARAGRAPH_COUNT));
+	                System.out.println("content: " + content);
+	                Book b = new Book();
+	                NavigableSet<Word> words = b.readBook(content);
+	                for(Word w : words)
+	                	System.out.println(w.toString());
+					} 
+					catch (Exception ex)
+					{
+						ex.printStackTrace();
+					}
 	                
 	            } else {
 	                //Do something else
