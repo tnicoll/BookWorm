@@ -1,6 +1,6 @@
 package com.tnicoll.apps.bookworm;
 
-public class Word implements Comparable{
+public class Word{
 
 	String token;
 	int count;
@@ -46,23 +46,6 @@ public class Word implements Comparable{
 		} else if (!token.equals(other.token))
 			return false;
 		return true;
-	}
-	@Override
-	public int compareTo(Object o) {
-	    
-	    if ( this == o ) 
-	    {	
-	    	this.setCount(this.getCount()+1);
-	    	return 0;
-	    
-	    }
-	    else if(this.token.compareTo(((Word) o).getToken()) ==0)
-	    {
-	    	this.setCount(this.getCount()+1);
-	    	return 0;
-	    }
-	    
-	    else return -1;
 	}
 	
 	

@@ -1,17 +1,30 @@
 package com.tnicoll.apps.bookworm;
 
-import java.util.NavigableSet;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
-import java.util.TreeSet;
 
 public class Book {
-	private NavigableSet<Word> words;
+	
+	private Map<Word, MutableInt> words;
 	private int paragraph_count;
 
-	public NavigableSet <Word>readBook(String content)
+	class MutableInt {
+		  int value = 1;
+		  public void inc () 
+		  { 
+			  ++value; 
+		  }
+		  public int get ()
+		  { 
+			  return value; 
+		  }
+		}
+	
+	public Map <Word, MutableInt>readBook(String content)
 	{
-		words = new TreeSet<Word>();
-		
+		words = new HashMap<Word, MutableInt>();
+		content = stripPunctuation(content);
 		Scanner lineScanner = new Scanner(content);
 		paragraph_count = 0;
 
@@ -24,13 +37,31 @@ public class Book {
 				Scanner wordScanner = new Scanner(temp);
 				while(wordScanner.hasNext())
 				{
-					Word w = new Word(wordScanner.next());
-					words.add(w);
+					String s = stripPunctuation(wordScanner.next());
+					Word w = new Word(s);
+					MutableInt value = words.get(w);
+					if (value == null) 
+					{
+					  value = new MutableInt ();
+					  words.put (w, value);
+					} 
+					else 
+					{
+					  value.inc();
+					}
 				}
 			}
 		}
 		System.out.println("count: " + paragraph_count);
 		return words;
+	}
+	
+	public String stripPunctuation(String token)
+	{
+		if(token.substring(token.length()-1).matches("\\p{Punct}+"))
+			return token.substring(0, token.length()-1);
+		else
+			return token;
 	}
 	
 }

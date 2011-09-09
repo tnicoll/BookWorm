@@ -7,22 +7,16 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.*;
-import java.net.ContentHandler;
-import java.util.NavigableSet;
-
+import java.util.Map;
 import javax.swing.*;
-
-import org.apache.tika.Tika;
-import org.apache.tika.exception.TikaException;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.*;
 import org.apache.tika.sax.BodyContentHandler;
 
 
 
-
 /**
- * Main Class for creating
+ * Main Class
  *
  */
 public class BookWormMain extends javax.swing.JFrame
@@ -145,6 +139,11 @@ public class BookWormMain extends javax.swing.JFrame
 			}
 		
 	}
+	class MutableInt {
+		  int value = 0;
+		  public void inc () { ++value; }
+		  public int get () { return value; }
+		}
 	class OpenListener implements ActionListener {
 
 	    public void actionPerformed(ActionEvent e) {
@@ -167,10 +166,15 @@ public class BookWormMain extends javax.swing.JFrame
 //	                System.out.println("Paragraph count: " +  metadata.get(Metadata.PARAGRAPH_COUNT));
 	                System.out.println("content: " + content);
 	                Book b = new Book();
-	                NavigableSet<Word> words = b.readBook(content);
-	                for(Word w : words)
-	                	System.out.println(w.toString());
-					} 
+	                Map <Word,Book.MutableInt> words = b.readBook(content);
+	                
+	                for (Map.Entry<Word,Book.MutableInt> entry : words.entrySet())
+	                {
+	                    System.out.println(entry.getKey() + "/" + entry.getValue().get());
+	                }
+	                
+					}
+	                
 					catch (Exception ex)
 					{
 						ex.printStackTrace();
@@ -181,5 +185,5 @@ public class BookWormMain extends javax.swing.JFrame
 	            }
 	       }
 	    }
-	  }
+	    }
 }
