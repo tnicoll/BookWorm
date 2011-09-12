@@ -1,7 +1,12 @@
 package com.tnicoll.apps.bookworm;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.FlowLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -9,6 +14,11 @@ import java.awt.event.WindowEvent;
 import java.io.*;
 import java.util.Map;
 import javax.swing.*;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
+
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.*;
 import org.apache.tika.sax.BodyContentHandler;
@@ -40,6 +50,11 @@ public class BookWormMain extends javax.swing.JFrame
 	private JMenu jMenu3;
 	private JTextArea console;
 	private JFileChooser fc = new JFileChooser();
+	
+	private JScrollPane wordScroll;
+	private JTable wordTable;
+	private DefaultTableModel model;
+	
 	
 	public static void main(String[] args) {
 		SwingUtilities.invokeLater(new Runnable() {
@@ -73,9 +88,19 @@ public class BookWormMain extends javax.swing.JFrame
 		menuPanel.setPreferredSize(new java.awt.Dimension(300, 400));
 
 		/*Add Panel */		
-		mainPanel = new JPanel();
-		getContentPane().add(mainPanel, BorderLayout.WEST);
-		mainPanel.setPreferredSize(new java.awt.Dimension(300, 400));
+//		mainPanel = new JPanel();
+//		getContentPane().add(mainPanel, BorderLayout.WEST);
+//		mainPanel.setPreferredSize(new java.awt.Dimension(300, 400));
+		
+		Object []columnNames = {"Word", "Count"};
+		Object [][] data = {{"",""}};;
+		model = new DefaultTableModel(data, columnNames);
+		wordTable = new JTable(model);
+		
+		//wordTable.getModel().addTableModelListener(new wordTableListener());
+		wordTable.setAutoCreateRowSorter(true);
+		wordScroll = new JScrollPane(wordTable);
+		getContentPane().add(wordScroll, BorderLayout.WEST);
 		
 		//Add console
 		console = new JTextArea(100,100);
@@ -138,6 +163,7 @@ public class BookWormMain extends javax.swing.JFrame
 				helpMenuItem.setText("Help");
 			}
 		
+		
 	}
 	class MutableInt {
 		  int value = 0;
@@ -168,11 +194,25 @@ public class BookWormMain extends javax.swing.JFrame
 	                Book b = new Book();
 	                Map <Word,Book.MutableInt> words = b.readBook(content);
 	                
+	                String []columnNames = {"Word", "Count"};
+            		Object [][] data = new Object [words.size()][2];
+            		
+            		int i=0;
 	                for (Map.Entry<Word,Book.MutableInt> entry : words.entrySet())
 	                {
+	                	
 	                    System.out.println(entry.getKey() + "/" + entry.getValue().get());
+	                    data[i][0]=entry.getKey().getToken();
+	                    data[i][1]=entry.getValue().get();
+	                    
+	            		model.setValueAt(entry.getKey().getToken(), i, 0);
+	            		model.setValueAt(entry.getValue().get(), i, 1);
+	            		i++;
+	            		if(i<words.size())
+	            		model.addRow(data);
 	                }
-	                
+	                wordTable.revalidate();
+
 					}
 	                
 					catch (Exception ex)
@@ -186,4 +226,13 @@ public class BookWormMain extends javax.swing.JFrame
 	       }
 	    }
 	    }
+	class wordTableListener implements TableModelListener
+	{
+
+		@Override
+		public void tableChanged(TableModelEvent e) {
+			
+		}
+	}
+	
 }
