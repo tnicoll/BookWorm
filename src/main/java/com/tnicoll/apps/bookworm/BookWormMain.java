@@ -209,7 +209,7 @@ public class BookWormMain extends javax.swing.JFrame
 	            		model.setValueAt(entry.getValue().get(), i, 1);
 	            		i++;
 	            		if(i<words.size())
-	            		model.addRow(data);
+	            			model.addRow(data);
 	                }
 	                wordTable.revalidate();
 
@@ -226,13 +226,5 @@ public class BookWormMain extends javax.swing.JFrame
 	       }
 	    }
 	    }
-	class wordTableListener implements TableModelListener
-	{
-
-		@Override
-		public void tableChanged(TableModelEvent e) {
-			
-		}
-	}
 	
 }
