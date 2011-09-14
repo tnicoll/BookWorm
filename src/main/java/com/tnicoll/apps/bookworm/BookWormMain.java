@@ -1,12 +1,11 @@
 package com.tnicoll.apps.bookworm;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.FlowLayout;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.GridLayout;
+import java.awt.GraphicsConfiguration;
 import java.awt.Insets;
+import java.awt.Rectangle;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -14,14 +13,19 @@ import java.awt.event.WindowEvent;
 import java.io.*;
 import java.util.Map;
 import javax.swing.*;
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.*;
 import org.apache.tika.sax.BodyContentHandler;
+
+import com.tnicoll.apps.bookworm.model.Book;
+import com.tnicoll.apps.bookworm.model.MutableInt;
+import com.tnicoll.apps.bookworm.model.Word;
 
 
 
@@ -37,23 +41,27 @@ public class BookWormMain extends javax.swing.JFrame
 	private static final long serialVersionUID = -2381944488789900157L;
 	private JMenuItem helpMenuItem;
 	private JPanel menuPanel;
-	private JMenuBar jMenuBar1;
-	private JMenu jMenu5;
-	private JPanel mainPanel;
+	private JMenuBar toolbar;
+	
+	private JPanel optionPanel;
 	private JMenuItem exitMenuItem;
 	private JSeparator jSeparator2;
 	private JMenuItem closeFileMenuItem;
-	private JMenuItem saveAsMenuItem;
-	private JMenuItem saveMenuItem;
 	private JMenuItem openFileMenuItem;
-	private JMenuItem newFileMenuItem;
-	private JMenu jMenu3;
+	private JMenu fileMenu;
+	private JMenu helpMenu;
+	
 	private JTextArea console;
 	private JFileChooser fc = new JFileChooser();
 	
+	private JTextField filterBox;
+	private JPanel searchPanel;
 	private JScrollPane wordScroll;
 	private JTable wordTable;
 	private DefaultTableModel model;
+	
+	private int width;
+	private int height;
 	
 	
 	public static void main(String[] args) {
@@ -74,102 +82,143 @@ public class BookWormMain extends javax.swing.JFrame
 	}
 
 	private void initGUI() {
-		this.setResizable(false);
+		GraphicsConfiguration gc = getGraphicsConfiguration( ); 
+		Rectangle screenRect = gc.getBounds( ); // screen dimensions  
+		Toolkit tk = Toolkit.getDefaultToolkit( ); 
+		Insets desktopInsets = tk.getScreenInsets(gc);  
+		Insets frameInsets = getInsets( ); // only works after pack( )  
+		width = screenRect.width - (desktopInsets.left + desktopInsets.right) - 
+				(frameInsets.left + frameInsets.right); 
+		height = screenRect.height - (desktopInsets.top + desktopInsets.bottom) - 
+				(frameInsets.top + frameInsets.bottom);
+		this.setSize(width, height);
+		this.setResizable(true);
+		this.setExtendedState(this.getExtendedState() | JFrame.MAXIMIZED_BOTH);
 		this.addWindowListener(new WindowAdapter() {
 			  public void windowClosing(WindowEvent we) {
 				    System.exit(0);
 				  }
 				});
+				
+		//Add filter box
+		searchPanel = new JPanel();
+		searchPanel.setPreferredSize(new java.awt.Dimension(width/2, height));
+		JLabel filterLabel = new JLabel("Filter: ");
+		filterBox = new JTextField();
+		filterBox.setEditable(true);
+		filterBox.setColumns(50);
+		filterBox.setSize((width/2)-50, 10);
+		searchPanel.add(filterLabel, BorderLayout.NORTH);
+		searchPanel.add(filterBox, BorderLayout.NORTH);
+		getContentPane().add(searchPanel, BorderLayout.WEST);
+		
+		///Add Word Table
+		Object []columnNames = {"Word", "Count"};
+		Object [][] data = {{"",new Integer(0)}};;
+		model = new BookModel(data, columnNames);
+		
+		wordTable = new JTable(model);
+		wordTable.setAutoCreateRowSorter(true);
+		final TableRowSorter<TableModel> sorter = new TableRowSorter<TableModel>(model);
+		wordTable.setRowSorter(sorter);
+		filterBox.getDocument().addDocumentListener(new DocumentListener() {
+			@Override
+			public void insertUpdate(DocumentEvent e) {
+				filterText();
+			}
+			@Override
+			public void removeUpdate(DocumentEvent e) {
+				filterText();
+			}
+			@Override
+			public void changedUpdate(DocumentEvent e) {
+				filterText();
+			}
+		      public void filterText() {
+		          String text = filterBox.getText();
+		          if (text.length() == 0) {
+		            sorter.setRowFilter(null);
+		          } else {
+		            sorter.setRowFilter(RowFilter.regexFilter("(?i)" + text));
+		          }
+		        }
+			
+		      });
+		wordScroll = new JScrollPane(wordTable);
+		wordScroll.setPreferredSize(new java.awt.Dimension(width/2, height-90));
+		searchPanel.add(wordScroll, BorderLayout.SOUTH);
+		
+		
+		///Add Right Hand Panel
 		menuPanel = new JPanel();
-		getContentPane().add(menuPanel);
+		getContentPane().add(menuPanel, BorderLayout.EAST);
 		FlowLayout menuPanelLayout = new FlowLayout();
 		menuPanelLayout.setAlignment(FlowLayout.RIGHT);
 		menuPanel.setLayout(menuPanelLayout);
-		menuPanel.setPreferredSize(new java.awt.Dimension(300, 400));
-
-		/*Add Panel */		
-//		mainPanel = new JPanel();
-//		getContentPane().add(mainPanel, BorderLayout.WEST);
-//		mainPanel.setPreferredSize(new java.awt.Dimension(300, 400));
+		menuPanel.setPreferredSize(new java.awt.Dimension(width/2, height));
 		
-		Object []columnNames = {"Word", "Count"};
-		Object [][] data = {{"",""}};;
-		model = new DefaultTableModel(data, columnNames);
-		wordTable = new JTable(model);
+		//Add Right Hand Top Option Panel
+		optionPanel = new JPanel();
+		optionPanel.setLayout(menuPanelLayout);
+		optionPanel.setPreferredSize(new java.awt.Dimension(width/2, (height/2)) );
+		menuPanel.add(optionPanel, BorderLayout.NORTH);
 		
-		//wordTable.getModel().addTableModelListener(new wordTableListener());
-		wordTable.setAutoCreateRowSorter(true);
-		wordScroll = new JScrollPane(wordTable);
-		getContentPane().add(wordScroll, BorderLayout.WEST);
-		
-		//Add console
-		console = new JTextArea(100,100);
+		//Add text console
+		console = new JTextArea();
 		console.setVisible(true);
 		console.setEditable(isDisplayable());
+		console.setLineWrap(true);
+		console.setWrapStyleWord(true);
+		
 		JScrollPane consolePane = new JScrollPane(console);
 		consolePane.setVisible(true);
-		menuPanel.add(consolePane);
+		consolePane.setPreferredSize(new java.awt.Dimension((width/2)-20, (height/2)-70) );
+		menuPanel.add(consolePane, BorderLayout.SOUTH);
+		console.setText("");	
 		
-		setSize(600, 600);
-	
-		jMenuBar1 = new JMenuBar();
-		setJMenuBar(jMenuBar1);
+		//Add toolbar menu
+		toolbar = new JMenuBar();
+		setJMenuBar(toolbar);
 		
-			jMenu3 = new JMenu();
-			jMenuBar1.add(jMenu3);
-			jMenu3.setText("File");
-			{
-				newFileMenuItem = new JMenuItem();
-				jMenu3.add(newFileMenuItem);
-				newFileMenuItem.setText("New");
-			}
+			fileMenu = new JMenu();
+			toolbar.add(fileMenu);
+			fileMenu.setText("File");
 			{
 				openFileMenuItem = new JMenuItem();
 				openFileMenuItem.addActionListener(new OpenListener());
-				jMenu3.add(openFileMenuItem);
+				fileMenu.add(openFileMenuItem);
 				openFileMenuItem.setText("Open");
 			}
-			{
-				saveMenuItem = new JMenuItem();
-				jMenu3.add(saveMenuItem);
-				saveMenuItem.setText("Save");
-			}
-			{
-				saveAsMenuItem = new JMenuItem();
-				jMenu3.add(saveAsMenuItem);
-				saveAsMenuItem.setText("Save As ...");
-			}
+			
 			{
 				closeFileMenuItem = new JMenuItem();
-				jMenu3.add(closeFileMenuItem);
+				closeFileMenuItem.addActionListener(new CloseListener());
+				fileMenu.add(closeFileMenuItem);
 				closeFileMenuItem.setText("Close");
 			}
 			{
 				jSeparator2 = new JSeparator();
-				jMenu3.add(jSeparator2);
+				fileMenu.add(jSeparator2);
 			}
 			{
 				exitMenuItem = new JMenuItem();
-				jMenu3.add(exitMenuItem);
+				fileMenu.add(exitMenuItem);
 				exitMenuItem.setText("Exit");
 			}
 		
-			jMenu5 = new JMenu();
-			jMenuBar1.add(jMenu5);
-			jMenu5.setText("Help");
+			helpMenu = new JMenu();
+			toolbar.add(helpMenu);
+			helpMenu.setText("Help");
 			{
 				helpMenuItem = new JMenuItem();
-				jMenu5.add(helpMenuItem);
+				helpMenu.add(helpMenuItem);
 				helpMenuItem.setText("Help");
 			}
 		
 		
 	}
-	class MutableInt {
-		  int value = 0;
-		  public void inc () { ++value; }
-		  public int get () { return value; }
-		}
+	 
+	
 	class OpenListener implements ActionListener {
 
 	    public void actionPerformed(ActionEvent e) {
@@ -190,20 +239,24 @@ public class BookWormMain extends javax.swing.JFrame
 //	                System.out.println("Title: " + metadata.get(Metadata.TITLE));
 //	                System.out.println("Word count: " + metadata.get(Metadata.WORD_COUNT));
 //	                System.out.println("Paragraph count: " +  metadata.get(Metadata.PARAGRAPH_COUNT));
-	                System.out.println("content: " + content);
-	                Book b = new Book();
-	                Map <Word,Book.MutableInt> words = b.readBook(content);
 	                
-	                String []columnNames = {"Word", "Count"};
+	                resetList();
+	                
+	                console.setText(content);
+	              
+	                Book b = new Book();
+	                Map <Word,MutableInt> words = b.readBook(content);
+	                
+	               // String []columnNames = {"Word", "Count"};
             		Object [][] data = new Object [words.size()][2];
             		
             		int i=0;
-	                for (Map.Entry<Word,Book.MutableInt> entry : words.entrySet())
+	                for (Map.Entry<Word,MutableInt> entry : words.entrySet())
 	                {
 	                	
 	                    System.out.println(entry.getKey() + "/" + entry.getValue().get());
 	                    data[i][0]=entry.getKey().getToken();
-	                    data[i][1]=entry.getValue().get();
+	                    data[i][1]=new Integer(entry.getValue().get());
 	                    
 	            		model.setValueAt(entry.getKey().getToken(), i, 0);
 	            		model.setValueAt(entry.getValue().get(), i, 1);
@@ -211,7 +264,6 @@ public class BookWormMain extends javax.swing.JFrame
 	            		if(i<words.size())
 	            			model.addRow(data);
 	                }
-	                wordTable.revalidate();
 
 					}
 	                
@@ -227,4 +279,26 @@ public class BookWormMain extends javax.swing.JFrame
 	    }
 	    }
 	
+	class CloseListener implements ActionListener {
+
+	    public void actionPerformed(ActionEvent e) {
+	    	if (e.getSource() == closeFileMenuItem) {
+	            resetList();
+	    		
+	       }
+	    }
+	    }
+	
+	public void resetList()
+	{
+		console.setText("");
+        while (model.getRowCount()>0){
+        	model.removeRow(0);
+        	}
+		Object [][] data = {{"",new Integer(0)}};;
+		model.addRow(data);
+		model.setValueAt("", 0, 0);
+		model.setValueAt(0, 0, 1);
+	}
+
 }

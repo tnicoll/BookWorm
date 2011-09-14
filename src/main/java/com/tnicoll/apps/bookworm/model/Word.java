@@ -1,4 +1,4 @@
-package com.tnicoll.apps.bookworm;
+package com.tnicoll.apps.bookworm.model;
 
 public class Word{
 
