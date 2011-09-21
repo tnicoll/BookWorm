@@ -23,6 +23,7 @@ import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.*;
 import org.apache.tika.sax.BodyContentHandler;
 
+import com.tnicoll.apps.bookworm.gui.BookPanel;
 import com.tnicoll.apps.bookworm.model.Book;
 import com.tnicoll.apps.bookworm.model.MutableInt;
 import com.tnicoll.apps.bookworm.model.Word;
@@ -40,10 +41,10 @@ public class BookWormMain extends javax.swing.JFrame
 	 */
 	private static final long serialVersionUID = -2381944488789900157L;
 	private JMenuItem helpMenuItem;
-	private JPanel menuPanel;
+	
 	private JMenuBar toolbar;
 	
-	private JPanel optionPanel;
+
 	private JMenuItem exitMenuItem;
 	private JSeparator jSeparator2;
 	private JMenuItem closeFileMenuItem;
@@ -51,20 +52,22 @@ public class BookWormMain extends javax.swing.JFrame
 	private JMenu fileMenu;
 	private JMenu helpMenu;
 	
-	private JTextArea console;
 	private JFileChooser fc = new JFileChooser();
 	
-	private JTextField filterBox;
-	private JPanel searchPanel;
-	private JScrollPane wordScroll;
-	private JTable wordTable;
-	private DefaultTableModel model;
+	private JTabbedPane tabbedPane;
 	
 	private int width;
 	private int height;
 	
 	
 	public static void main(String[] args) {
+		try {
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		} catch (ClassNotFoundException | InstantiationException
+				| IllegalAccessException | UnsupportedLookAndFeelException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				
@@ -82,6 +85,7 @@ public class BookWormMain extends javax.swing.JFrame
 	}
 
 	private void initGUI() {
+		
 		GraphicsConfiguration gc = getGraphicsConfiguration( ); 
 		Rectangle screenRect = gc.getBounds( ); // screen dimensions  
 		Toolkit tk = Toolkit.getDefaultToolkit( ); 
@@ -99,82 +103,14 @@ public class BookWormMain extends javax.swing.JFrame
 				    System.exit(0);
 				  }
 				});
+		tabbedPane = new JTabbedPane();
+		
+		
+		getContentPane().add(tabbedPane, BorderLayout.WEST);
+		
+		
 				
-		//Add filter box
-		searchPanel = new JPanel();
-		searchPanel.setPreferredSize(new java.awt.Dimension(width/2, height));
-		JLabel filterLabel = new JLabel("Filter: ");
-		filterBox = new JTextField();
-		filterBox.setEditable(true);
-		filterBox.setColumns(50);
-		filterBox.setSize((width/2)-50, 10);
-		searchPanel.add(filterLabel, BorderLayout.NORTH);
-		searchPanel.add(filterBox, BorderLayout.NORTH);
-		getContentPane().add(searchPanel, BorderLayout.WEST);
 		
-		///Add Word Table
-		Object []columnNames = {"Word", "Count"};
-		Object [][] data = {{"",new Integer(0)}};;
-		model = new BookModel(data, columnNames);
-		
-		wordTable = new JTable(model);
-		wordTable.setAutoCreateRowSorter(true);
-		final TableRowSorter<TableModel> sorter = new TableRowSorter<TableModel>(model);
-		wordTable.setRowSorter(sorter);
-		filterBox.getDocument().addDocumentListener(new DocumentListener() {
-			@Override
-			public void insertUpdate(DocumentEvent e) {
-				filterText();
-			}
-			@Override
-			public void removeUpdate(DocumentEvent e) {
-				filterText();
-			}
-			@Override
-			public void changedUpdate(DocumentEvent e) {
-				filterText();
-			}
-		      public void filterText() {
-		          String text = filterBox.getText();
-		          if (text.length() == 0) {
-		            sorter.setRowFilter(null);
-		          } else {
-		            sorter.setRowFilter(RowFilter.regexFilter("(?i)" + text));
-		          }
-		        }
-			
-		      });
-		wordScroll = new JScrollPane(wordTable);
-		wordScroll.setPreferredSize(new java.awt.Dimension(width/2, height-90));
-		searchPanel.add(wordScroll, BorderLayout.SOUTH);
-		
-		
-		///Add Right Hand Panel
-		menuPanel = new JPanel();
-		getContentPane().add(menuPanel, BorderLayout.EAST);
-		FlowLayout menuPanelLayout = new FlowLayout();
-		menuPanelLayout.setAlignment(FlowLayout.RIGHT);
-		menuPanel.setLayout(menuPanelLayout);
-		menuPanel.setPreferredSize(new java.awt.Dimension(width/2, height));
-		
-		//Add Right Hand Top Option Panel
-		optionPanel = new JPanel();
-		optionPanel.setLayout(menuPanelLayout);
-		optionPanel.setPreferredSize(new java.awt.Dimension(width/2, (height/2)) );
-		menuPanel.add(optionPanel, BorderLayout.NORTH);
-		
-		//Add text console
-		console = new JTextArea();
-		console.setVisible(true);
-		console.setEditable(isDisplayable());
-		console.setLineWrap(true);
-		console.setWrapStyleWord(true);
-		
-		JScrollPane consolePane = new JScrollPane(console);
-		consolePane.setVisible(true);
-		consolePane.setPreferredSize(new java.awt.Dimension((width/2)-20, (height/2)-70) );
-		menuPanel.add(consolePane, BorderLayout.SOUTH);
-		console.setText("");	
 		
 		//Add toolbar menu
 		toolbar = new JMenuBar();
@@ -219,6 +155,8 @@ public class BookWormMain extends javax.swing.JFrame
 	}
 	 
 	
+	
+
 	class OpenListener implements ActionListener {
 
 	    public void actionPerformed(ActionEvent e) {
@@ -227,30 +165,38 @@ public class BookWormMain extends javax.swing.JFrame
 
 	            if (returnVal == JFileChooser.APPROVE_OPTION) {
 	            	File file = fc.getSelectedFile();
-	            	
+	            	int i=0;
 					try (InputStream stream = new FileInputStream(file);){
-
-	            	BodyContentHandler handler = new BodyContentHandler();
+						System.out.println("stream loaded");
+	            	BodyContentHandler handler = new BodyContentHandler(-1);
 	            	Metadata metadata = new Metadata();
 	                AutoDetectParser parser = new AutoDetectParser();
-	                parser.parse(stream, handler, metadata);
+	                System.out.println("before parser");
+	                ParseContext context = new ParseContext();
+	                parser.parse(stream, handler, metadata, context);
+	                System.out.println("after parser");
 	                String content = handler.toString();
-//	                System.out.println("Mime: " + metadata.get(Metadata.CONTENT_TYPE));
+	                System.out.println("got content");
+	                System.out.println("Mime: " + metadata.get(Metadata.CONTENT_TYPE));
 //	                System.out.println("Title: " + metadata.get(Metadata.TITLE));
 //	                System.out.println("Word count: " + metadata.get(Metadata.WORD_COUNT));
 //	                System.out.println("Paragraph count: " +  metadata.get(Metadata.PARAGRAPH_COUNT));
 	                
-	                resetList();
+	                BookPanel bp = new BookPanel(width-20, height-40);
+	        		
 	                
-	                console.setText(content);
+	                bp.setConsoleText(content);
 	              
 	                Book b = new Book();
 	                Map <Word,MutableInt> words = b.readBook(content);
 	                
 	               // String []columnNames = {"Word", "Count"};
             		Object [][] data = new Object [words.size()][2];
+            		Object []columnNames = {"Word", "Count"};
             		
-            		int i=0;
+            		BookModel model = bp.getModel();
+            		
+            		//int i=0;
 	                for (Map.Entry<Word,MutableInt> entry : words.entrySet())
 	                {
 	                	
@@ -264,11 +210,13 @@ public class BookWormMain extends javax.swing.JFrame
 	            		if(i<words.size())
 	            			model.addRow(data);
 	                }
-
+	                bp.setModel(model);
+	                tabbedPane.addTab("Book1",bp);
 					}
 	                
 					catch (Exception ex)
 					{
+						System.out.println("I: " + i);
 						ex.printStackTrace();
 					}
 	                
@@ -291,14 +239,14 @@ public class BookWormMain extends javax.swing.JFrame
 	
 	public void resetList()
 	{
-		console.setText("");
-        while (model.getRowCount()>0){
-        	model.removeRow(0);
-        	}
-		Object [][] data = {{"",new Integer(0)}};;
-		model.addRow(data);
-		model.setValueAt("", 0, 0);
-		model.setValueAt(0, 0, 1);
+//		console.setText("");
+//        while (model.getRowCount()>0){
+//        	model.removeRow(0);
+//        	}
+//		Object [][] data = {{"",new Integer(0)}};;
+//		model.addRow(data);
+//		model.setValueAt("", 0, 0);
+//		model.setValueAt(0, 0, 1);
 	}
 
 }

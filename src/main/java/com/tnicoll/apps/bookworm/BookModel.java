@@ -3,7 +3,7 @@ package com.tnicoll.apps.bookworm;
 import javax.swing.Icon;
 import javax.swing.table.DefaultTableModel;
 
-class BookModel extends DefaultTableModel
+public final class BookModel extends DefaultTableModel
 {
 	
 
@@ -18,6 +18,11 @@ class BookModel extends DefaultTableModel
 
 	@Override
     public Class<?> getColumnClass(int colNum) {
+		Object value = this.getValueAt(0,colNum);
+		if(value==null)
+			return String.class;
+		else
+		{
         switch (colNum) {
             case 0:
                 return Integer.class;
@@ -33,6 +38,7 @@ class BookModel extends DefaultTableModel
                 return Icon.class;
             default:
                 return String.class;
+        }
         }
     } 
 }
