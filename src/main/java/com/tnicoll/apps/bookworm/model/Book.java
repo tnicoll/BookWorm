@@ -8,6 +8,9 @@ import java.util.Scanner;
 
 public class Book {
 	
+	/*
+	 * Contains all the information about a book
+	 */
 	private Map<Word, MutableInt> words;
 	private int paragraph_count;
 
@@ -53,6 +56,14 @@ public class Book {
 			return token.substring(0, token.length()-1);
 		else
 			return token;
+	}
+
+	public int getParagraph_count() {
+		return paragraph_count;
+	}
+
+	public void setParagraph_count(int paragraph_count) {
+		this.paragraph_count = paragraph_count;
 	}
 	
 }

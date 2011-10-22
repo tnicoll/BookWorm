@@ -19,9 +19,11 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
+import org.apache.tika.exception.TikaException;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.*;
 import org.apache.tika.sax.BodyContentHandler;
+import org.xml.sax.SAXException;
 
 import com.tnicoll.apps.bookworm.gui.BookPanel;
 import com.tnicoll.apps.bookworm.model.Book;
@@ -41,9 +43,9 @@ public class BookWormMain extends javax.swing.JFrame
 	 */
 	private static final long serialVersionUID = -2381944488789900157L;
 	private JMenuItem helpMenuItem;
-	
+
 	private JMenuBar toolbar;
-	
+
 
 	private JMenuItem exitMenuItem;
 	private JSeparator jSeparator2;
@@ -51,15 +53,20 @@ public class BookWormMain extends javax.swing.JFrame
 	private JMenuItem openFileMenuItem;
 	private JMenu fileMenu;
 	private JMenu helpMenu;
-	
+	private JProgressBar progress;
 	private JFileChooser fc = new JFileChooser();
-	
+
 	private JTabbedPane tabbedPane;
-	
+
 	private int width;
 	private int height;
-	
-	
+	public BodyContentHandler handler;
+	public Metadata metadata;
+	public AutoDetectParser parser;
+	public ParseContext context;
+	public boolean done;
+
+
 	public static void main(String[] args) {
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -70,7 +77,7 @@ public class BookWormMain extends javax.swing.JFrame
 		}
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				
+
 				BookWormMain inst = new BookWormMain();
 				inst.setLocationRelativeTo(null);
 				inst.setVisible(true);
@@ -78,14 +85,14 @@ public class BookWormMain extends javax.swing.JFrame
 		});
 
 	}
-	
+
 	public BookWormMain() {
 		super();
 		initGUI();
 	}
 
 	private void initGUI() {
-		
+
 		GraphicsConfiguration gc = getGraphicsConfiguration( ); 
 		Rectangle screenRect = gc.getBounds( ); // screen dimensions  
 		Toolkit tk = Toolkit.getDefaultToolkit( ); 
@@ -99,154 +106,165 @@ public class BookWormMain extends javax.swing.JFrame
 		this.setResizable(true);
 		this.setExtendedState(this.getExtendedState() | JFrame.MAXIMIZED_BOTH);
 		this.addWindowListener(new WindowAdapter() {
-			  public void windowClosing(WindowEvent we) {
-				    System.exit(0);
-				  }
-				});
+			public void windowClosing(WindowEvent we) {
+				System.exit(0);
+			}
+		});
 		tabbedPane = new JTabbedPane();
-		
-		
+
 		getContentPane().add(tabbedPane, BorderLayout.WEST);
-		
-		
-				
-		
-		
+
+
+
+
+
 		//Add toolbar menu
 		toolbar = new JMenuBar();
 		setJMenuBar(toolbar);
-		
-			fileMenu = new JMenu();
-			toolbar.add(fileMenu);
-			fileMenu.setText("File");
-			{
-				openFileMenuItem = new JMenuItem();
-				openFileMenuItem.addActionListener(new OpenListener());
-				fileMenu.add(openFileMenuItem);
-				openFileMenuItem.setText("Open");
-			}
-			
-			{
-				closeFileMenuItem = new JMenuItem();
-				closeFileMenuItem.addActionListener(new CloseListener());
-				fileMenu.add(closeFileMenuItem);
-				closeFileMenuItem.setText("Close");
-			}
-			{
-				jSeparator2 = new JSeparator();
-				fileMenu.add(jSeparator2);
-			}
-			{
-				exitMenuItem = new JMenuItem();
-				fileMenu.add(exitMenuItem);
-				exitMenuItem.setText("Exit");
-			}
-		
-			helpMenu = new JMenu();
-			toolbar.add(helpMenu);
-			helpMenu.setText("Help");
-			{
-				helpMenuItem = new JMenuItem();
-				helpMenu.add(helpMenuItem);
-				helpMenuItem.setText("Help");
-			}
-		
-		
+
+		fileMenu = new JMenu();
+		toolbar.add(fileMenu);
+		fileMenu.setText("File");
+		{
+			openFileMenuItem = new JMenuItem();
+			openFileMenuItem.addActionListener(new OpenListener());
+			fileMenu.add(openFileMenuItem);
+			openFileMenuItem.setText("Open");
+		}
+
+		{
+			closeFileMenuItem = new JMenuItem();
+			closeFileMenuItem.addActionListener(new CloseListener());
+			fileMenu.add(closeFileMenuItem);
+			closeFileMenuItem.setText("Close");
+		}
+		{
+			jSeparator2 = new JSeparator();
+			fileMenu.add(jSeparator2);
+		}
+		{
+			exitMenuItem = new JMenuItem();
+			fileMenu.add(exitMenuItem);
+			exitMenuItem.setText("Exit");
+		}
+
+		helpMenu = new JMenu();
+		toolbar.add(helpMenu);
+		helpMenu.setText("Help");
+		{
+			helpMenuItem = new JMenuItem();
+			helpMenu.add(helpMenuItem);
+			helpMenuItem.setText("Help");
+		}
+
+
 	}
-	 
-	
-	
+
+
+
 
 	class OpenListener implements ActionListener {
 
-	    public void actionPerformed(ActionEvent e) {
-	    	if (e.getSource() == openFileMenuItem) {
-	            int returnVal = fc.showOpenDialog(BookWormMain.this);
+		public void actionPerformed(ActionEvent e) {
+			if (e.getSource() == openFileMenuItem) {
+				int returnVal = fc.showOpenDialog(BookWormMain.this);
 
-	            if (returnVal == JFileChooser.APPROVE_OPTION) {
-	            	File file = fc.getSelectedFile();
-	            	int i=0;
-					try (InputStream stream = new FileInputStream(file);){
-						System.out.println("stream loaded");
-	            	BodyContentHandler handler = new BodyContentHandler(-1);
-	            	Metadata metadata = new Metadata();
-	                AutoDetectParser parser = new AutoDetectParser();
-	                System.out.println("before parser");
-	                ParseContext context = new ParseContext();
-	                parser.parse(stream, handler, metadata, context);
-	                System.out.println("after parser");
-	                String content = handler.toString();
-	                System.out.println("got content");
-	                System.out.println("Mime: " + metadata.get(Metadata.CONTENT_TYPE));
-//	                System.out.println("Title: " + metadata.get(Metadata.TITLE));
-//	                System.out.println("Word count: " + metadata.get(Metadata.WORD_COUNT));
-//	                System.out.println("Paragraph count: " +  metadata.get(Metadata.PARAGRAPH_COUNT));
-	                
-	                BookPanel bp = new BookPanel(width-20, height-40);
-	        		
-	                
-	                bp.setConsoleText(content);
-	              
-	                Book b = new Book();
-	                Map <Word,MutableInt> words = b.readBook(content);
-	                
-	               // String []columnNames = {"Word", "Count"};
-            		Object [][] data = new Object [words.size()][2];
-            		Object []columnNames = {"Word", "Count"};
-            		
-            		BookModel model = bp.getModel();
-            		
-            		//int i=0;
-	                for (Map.Entry<Word,MutableInt> entry : words.entrySet())
-	                {
-	                	
-	                    System.out.println(entry.getKey() + "/" + entry.getValue().get());
-	                    data[i][0]=entry.getKey().getToken();
-	                    data[i][1]=new Integer(entry.getValue().get());
-	                    
-	            		model.setValueAt(entry.getKey().getToken(), i, 0);
-	            		model.setValueAt(entry.getValue().get(), i, 1);
-	            		i++;
-	            		if(i<words.size())
-	            			model.addRow(data);
-	                }
-	                bp.setModel(model);
-	                tabbedPane.addTab("Book1",bp);
-					}
-	                
-					catch (Exception ex)
-					{
-						System.out.println("I: " + i);
-						ex.printStackTrace();
-					}
-	                
-	            } else {
-	                //Do something else
-	            }
-	       }
-	    }
-	    }
-	
+				if (returnVal == JFileChooser.APPROVE_OPTION) {
+
+
+					openFile();
+				} else {
+					//Do something else
+				}
+			}
+		}
+	}
+
 	class CloseListener implements ActionListener {
 
-	    public void actionPerformed(ActionEvent e) {
-	    	if (e.getSource() == closeFileMenuItem) {
-	            resetList();
-	    		
-	       }
-	    }
-	    }
-	
+		public void actionPerformed(ActionEvent e) {
+			if (e.getSource() == closeFileMenuItem) {
+				int index = tabbedPane.getSelectedIndex();
+				if(index!=-1)
+					tabbedPane.remove(index);
+			}
+		}
+	}
+
+
+	public void openFile()
+	{
+		File file = fc.getSelectedFile();
+		int i=0;
+		try (InputStream stream = new FileInputStream(file);){
+			System.out.println("stream loaded");
+			handler = new BodyContentHandler(-1);
+			metadata = new Metadata();
+			parser = new AutoDetectParser();
+			System.out.println("before parser");
+			context = new ParseContext();
+
+			parser.parse(stream, handler, metadata, context);
+
+			System.out.println("after parser");
+			String content = handler.toString();
+			System.out.println("got content");
+			System.out.println("Mime: " + metadata.get(Metadata.CONTENT_TYPE));
+			//        System.out.println("Title: " + metadata.get(Metadata.TITLE));
+			//        System.out.println("Word count: " + metadata.get(Metadata.WORD_COUNT));
+			//        System.out.println("Paragraph count: " +  metadata.get(Metadata.PARAGRAPH_COUNT));
+
+			BookPanel bp = new BookPanel(width-20, height-40);
+
+
+			bp.setConsoleText(content);
+
+			Book b = new Book();
+			Map <Word,MutableInt> words = b.readBook(content);
+
+			// String []columnNames = {"Word", "Count"};
+			Object [][] data = new Object [words.size()][2];
+			Object []columnNames = {"Word", "Count"};
+
+			BookModel model = bp.getModel();
+
+			//int i=0;
+			for (Map.Entry<Word,MutableInt> entry : words.entrySet())
+			{
+
+				System.out.println(entry.getKey() + "/" + entry.getValue().get());
+				data[i][0]=entry.getKey().getToken();
+				data[i][1]=new Integer(entry.getValue().get());
+
+				model.setValueAt(entry.getKey().getToken(), i, 0);
+				model.setValueAt(entry.getValue().get(), i, 1);
+				i++;
+				if(i<words.size())
+					model.addRow(data);
+			}
+			bp.setModel(model);
+			bp.setParagraphCnt(b.getParagraph_count());
+			tabbedPane.addTab("Book1",bp);
+
+		}
+
+		catch (Exception ex)
+		{
+			System.out.println("I: " + i);
+			ex.printStackTrace();
+		}
+	}
+
 	public void resetList()
 	{
-//		console.setText("");
-//        while (model.getRowCount()>0){
-//        	model.removeRow(0);
-//        	}
-//		Object [][] data = {{"",new Integer(0)}};;
-//		model.addRow(data);
-//		model.setValueAt("", 0, 0);
-//		model.setValueAt(0, 0, 1);
+		//		console.setText("");
+		//        while (model.getRowCount()>0){
+		//        	model.removeRow(0);
+		//        	}
+		//		Object [][] data = {{"",new Integer(0)}};;
+		//		model.addRow(data);
+		//		model.setValueAt("", 0, 0);
+		//		model.setValueAt(0, 0, 1);
 	}
 
 }

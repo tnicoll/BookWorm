@@ -8,7 +8,7 @@ public final class BookModel extends DefaultTableModel
 	
 
 	/**
-	 * 
+	 *  
 	 */
 	private static final long serialVersionUID = 8791779464111015767L;
 
