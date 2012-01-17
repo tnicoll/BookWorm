@@ -1,8 +1,9 @@
 package com.tnicoll.apps.bookworm.model;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Scanner;
+
+import com.google.common.collect.HashMultiset;
+import com.google.common.collect.Multiset;
 
 
 
@@ -11,13 +12,14 @@ public class Book {
 	/*
 	 * Contains all the information about a book
 	 */
-	private Map<Word, MutableInt> words;
+	//private Map<Word, MutableInt> words;
+	private HashMultiset <String>words; 
 	private int paragraph_count;
 
 	
-	public Map <Word, MutableInt>readBook(String content)
+	public Multiset <String>readBook(String content)
 	{
-		words = new HashMap<Word, MutableInt>();
+		words = HashMultiset.create();
 		content = stripPunctuation(content);
 		Scanner lineScanner = new Scanner(content);
 		paragraph_count = 0;
@@ -32,17 +34,7 @@ public class Book {
 				while(wordScanner.hasNext())
 				{
 					String s = stripPunctuation(wordScanner.next());
-					Word w = new Word(s);
-					MutableInt value = words.get(w);
-					if (value == null) 
-					{
-					  value = new MutableInt ();
-					  words.put (w, value);
-					} 
-					else 
-					{
-					  value.inc();
-					}
+					words.add(s);
 				}
 			}
 		}

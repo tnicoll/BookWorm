@@ -1,7 +1,6 @@
 package com.tnicoll.apps.bookworm;
 
 import java.awt.BorderLayout;
-import java.awt.FlowLayout;
 import java.awt.GraphicsConfiguration;
 import java.awt.Insets;
 import java.awt.Rectangle;
@@ -11,24 +10,16 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.*;
-import java.util.Map;
 import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableModel;
-import javax.swing.table.TableRowSorter;
 
-import org.apache.tika.exception.TikaException;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.parser.*;
 import org.apache.tika.sax.BodyContentHandler;
-import org.xml.sax.SAXException;
 
+import com.google.common.collect.Multiset;
+import com.google.common.collect.Multiset.Entry;
 import com.tnicoll.apps.bookworm.gui.BookPanel;
 import com.tnicoll.apps.bookworm.model.Book;
-import com.tnicoll.apps.bookworm.model.MutableInt;
-import com.tnicoll.apps.bookworm.model.Word;
 
 
 
@@ -53,7 +44,6 @@ public class BookWormMain extends javax.swing.JFrame
 	private JMenuItem openFileMenuItem;
 	private JMenu fileMenu;
 	private JMenu helpMenu;
-	private JProgressBar progress;
 	private JFileChooser fc = new JFileChooser();
 
 	private JTabbedPane tabbedPane;
@@ -220,7 +210,7 @@ public class BookWormMain extends javax.swing.JFrame
 			bp.setConsoleText(content);
 
 			Book b = new Book();
-			Map <Word,MutableInt> words = b.readBook(content);
+			Multiset <String> words = b.readBook(content);
 
 			// String []columnNames = {"Word", "Count"};
 			Object [][] data = new Object [words.size()][2];
@@ -228,20 +218,17 @@ public class BookWormMain extends javax.swing.JFrame
 
 			BookModel model = bp.getModel();
 
-			//int i=0;
-			for (Map.Entry<Word,MutableInt> entry : words.entrySet())
+			for(Entry<String> entry : words.entrySet())
 			{
-
-				System.out.println(entry.getKey() + "/" + entry.getValue().get());
-				data[i][0]=entry.getKey().getToken();
-				data[i][1]=new Integer(entry.getValue().get());
-
-				model.setValueAt(entry.getKey().getToken(), i, 0);
-				model.setValueAt(entry.getValue().get(), i, 1);
+				data[i][0]=entry.getElement();
+				data[i][1]=entry.getCount();
+				model.setValueAt(entry.getElement(), i, 0);
+				model.setValueAt(entry.getCount(), i, 1);
 				i++;
 				if(i<words.size())
 					model.addRow(data);
 			}
+
 			bp.setModel(model);
 			bp.setParagraphCnt(b.getParagraph_count());
 			tabbedPane.addTab("Book1",bp);
