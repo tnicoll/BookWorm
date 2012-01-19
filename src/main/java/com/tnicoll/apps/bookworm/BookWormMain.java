@@ -237,21 +237,11 @@ public class BookWormMain extends javax.swing.JFrame
 
 		catch (Exception ex)
 		{
-			System.out.println("I: " + i);
+			String message = "Unable to open file.  Sorry about that :-(";
+			    JOptionPane.showMessageDialog(new JFrame(), message, "Error",
+			        JOptionPane.ERROR_MESSAGE);
 			ex.printStackTrace();
 		}
-	}
-
-	public void resetList()
-	{
-		//		console.setText("");
-		//        while (model.getRowCount()>0){
-		//        	model.removeRow(0);
-		//        	}
-		//		Object [][] data = {{"",new Integer(0)}};;
-		//		model.addRow(data);
-		//		model.setValueAt("", 0, 0);
-		//		model.setValueAt(0, 0, 1);
 	}
 
 }
