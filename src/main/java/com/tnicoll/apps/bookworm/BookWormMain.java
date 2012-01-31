@@ -20,6 +20,7 @@ import com.google.common.collect.Multiset;
 import com.google.common.collect.Multiset.Entry;
 import com.tnicoll.apps.bookworm.gui.BookPanel;
 import com.tnicoll.apps.bookworm.model.Book;
+import com.tnicoll.apps.bookworm.util.BookStats;
 
 
 
@@ -212,7 +213,7 @@ public class BookWormMain extends javax.swing.JFrame
 			Book b = new Book();
 			Multiset <String> words = b.readBook(content);
 
-			// String []columnNames = {"Word", "Count"};
+			//String []columnNames = {"Word", "Count"};
 			Object [][] data = new Object [words.size()][2];
 			Object []columnNames = {"Word", "Count"};
 
@@ -225,21 +226,27 @@ public class BookWormMain extends javax.swing.JFrame
 				model.setValueAt(entry.getElement(), i, 0);
 				model.setValueAt(entry.getCount(), i, 1);
 				i++;
-				if(i<words.size())
+				
+				if(i<words.entrySet().size())
 					model.addRow(data);
 			}
 
 			bp.setModel(model);
-			bp.setParagraphCnt(b.getParagraph_count());
-			tabbedPane.addTab("Book1",bp);
+			BookStats stats = b.getStats();
+			bp.setParagraphCnt(stats.getParagraph_count());
+			bp.setWordCnt(stats.getWord_count());
+			bp.setAvgParagraphWordCnt(stats.getAvg_paragraph_word_count());
+			bp.setFilesize(file.length());
+			bp.setSentenceCnt(stats.getSentence_count());
+			tabbedPane.addTab(file.getName(),bp);
 
 		}
 
 		catch (Exception ex)
 		{
 			String message = "Unable to open file.  Sorry about that :-(";
-			    JOptionPane.showMessageDialog(new JFrame(), message, "Error",
-			        JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(new JFrame(), message, "Error",
+					JOptionPane.ERROR_MESSAGE);
 			ex.printStackTrace();
 		}
 	}

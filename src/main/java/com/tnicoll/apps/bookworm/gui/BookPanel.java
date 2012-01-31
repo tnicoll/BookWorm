@@ -3,12 +3,15 @@ package com.tnicoll.apps.bookworm.gui;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.GraphicsConfiguration;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
+import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -44,6 +47,13 @@ public class BookPanel extends JPanel{
 	private JTextArea console;
 	private JScrollPane consolePane;
 	private JTextField paragraphCnt;
+	private JTextField wordCnt;
+	private JTextField avgParagraphWordCnt;
+	private JTextField sentenceCnt;
+	private JTextField speechCnt;
+	private JTextField filesize;
+	private JTextField characterCnt;
+	private JTextField spellingErrorCnt;
 
 
 	public JTextField getParagraphCnt() {
@@ -56,7 +66,27 @@ public class BookPanel extends JPanel{
 		this.paragraphCnt.setText(Integer.toString(paragraphCnt));
 	}
 
-
+	public void setWordCnt(int wordCnt) {
+		this.wordCnt.setText(Integer.toString(wordCnt));
+	}
+	public void setAvgParagraphWordCnt(int avgParagraphWordCnt) {
+		this.avgParagraphWordCnt.setText(Integer.toString(avgParagraphWordCnt));
+	}
+	public void setSentenceCnt(int sentenceCnt) {
+		this.sentenceCnt.setText(Integer.toString(sentenceCnt));
+	}
+	public void setSpeechCnt(int speechCnt) {
+		this.speechCnt.setText(Integer.toString(speechCnt));
+	}
+	public void setFilesize(long filesize) {
+		this.filesize.setText(Long.toString(filesize/1024) + "K");
+	}
+	public void setCharacterCnt(int characterCnt) {
+		this.characterCnt.setText(Integer.toString(characterCnt));
+	}
+	public void setSpellingErrorCnt(int spellingErrorCnt) {
+		this.spellingErrorCnt.setText(Integer.toString(spellingErrorCnt));
+	}
 
 	public BookPanel(int width, int height)
 	{
@@ -75,7 +105,7 @@ public class BookPanel extends JPanel{
 		Object []columnNames = {"Word", "Count"};
 		Object [][] data = {{"",new Integer(0)}};;
 		model = new BookModel(data, columnNames);
-
+		System.out.println(data[0][0]);
 		wordTable = new JTable(model);
 		wordTable.setRowSelectionAllowed(true);
 		ListSelectionModel cellSelectionModel = wordTable.getSelectionModel();
@@ -88,11 +118,14 @@ public class BookPanel extends JPanel{
 				int[] selectedRow = wordTable.getSelectedRows();
 				int[] selectedColumns = wordTable.getSelectedColumns();
 
-				for (int i = 0; i < selectedRow.length; i++) {
-					for (int j = 0; j < selectedColumns.length; j++) {
-						selectedData = (String) wordTable.getValueAt(selectedRow[i], selectedColumns[j]);
-					}
-				}
+//				for (int i = 0; i < selectedRow.length; i++) {
+//					for (int j = 0; j < selectedColumns.length; j++) {
+//						System.out.println("i: " + i);
+//						System.out.println("j: " + j);
+//						System.out.println("value: " + wordTable.getValueAt(selectedRow[i], selectedColumns[j]));
+						selectedData = (String) wordTable.getValueAt(selectedRow[0], selectedColumns[0]);
+//					}
+//				}
 				System.out.println("Selected: " + selectedData);
 			}
 
@@ -140,14 +173,74 @@ public class BookPanel extends JPanel{
 
 		//Add Right Hand Top Option Panel
 		optionPanel = new JPanel();
-		optionPanel.setLayout(menuPanelLayout);
-		optionPanel.setPreferredSize(new java.awt.Dimension(width/2, (height/2)) );
+		optionPanel.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
+		optionPanel.setPreferredSize(new java.awt.Dimension((width/2)-10, (height/2)) );
 
+		int textbox_x=100, textbox_y=30;
 		JLabel paragraphCntLabel = new JLabel("No of Paragraphs:");
+		paragraphCntLabel.setPreferredSize(new java.awt.Dimension(textbox_x, textbox_y));
 		paragraphCnt = new JTextField(6);
+		paragraphCnt.setPreferredSize(new java.awt.Dimension(50, 30));
+		paragraphCnt.setBounds(textbox_x, textbox_y, 20, 5);
 		optionPanel.add(paragraphCntLabel);
 		optionPanel.add(paragraphCnt);
+		
+		JLabel wordCntLabel = new JLabel("Word Count:");
+		wordCntLabel.setPreferredSize(new java.awt.Dimension(80, 30));
 
+		wordCnt = new JTextField(6);
+		wordCnt.setPreferredSize(new java.awt.Dimension(50, 30));
+		optionPanel.add(wordCntLabel);
+		optionPanel.add(wordCnt);
+		
+		JLabel avgParagraphWordCntLabel = new JLabel("Average Word Count per Paragraph:");
+		avgParagraphWordCntLabel.setPreferredSize(new java.awt.Dimension(180, 30));
+
+		avgParagraphWordCnt = new JTextField(6);
+		avgParagraphWordCnt.setPreferredSize(new java.awt.Dimension(50, 30));
+		optionPanel.add(avgParagraphWordCntLabel);
+		optionPanel.add(avgParagraphWordCnt);
+		
+		JLabel sentenceCntLabel = new JLabel("No of Sentences:");
+		sentenceCntLabel.setPreferredSize(new java.awt.Dimension(130, 30));
+
+		sentenceCnt = new JTextField(6);
+		sentenceCnt.setPreferredSize(new java.awt.Dimension(50, 30));
+		optionPanel.add(sentenceCntLabel);
+		optionPanel.add(sentenceCnt);
+		
+		JLabel speechCntLabel = new JLabel("No of lines of Dialogue:");
+		speechCntLabel.setPreferredSize(new java.awt.Dimension(150, 30));
+
+		speechCnt = new JTextField(6);
+		speechCnt.setPreferredSize(new java.awt.Dimension(50, 30));
+		optionPanel.add(speechCntLabel);
+		optionPanel.add(speechCnt);
+		
+		JLabel filesizeLabel = new JLabel("Filesize:");
+		filesizeLabel.setPreferredSize(new java.awt.Dimension(70, 30));
+
+		filesize = new JTextField(6);
+		filesize.setPreferredSize(new java.awt.Dimension(50, 30));
+		optionPanel.add(filesizeLabel);
+		optionPanel.add(filesize);
+		
+		JLabel characterCntLabel = new JLabel("No of characters:");
+		characterCntLabel.setPreferredSize(new java.awt.Dimension(120, 30));
+
+		characterCnt = new JTextField(6);
+		characterCnt.setPreferredSize(new java.awt.Dimension(50, 30));
+		optionPanel.add(characterCntLabel);
+		optionPanel.add(characterCnt);
+		
+		JLabel spellingErrorCntLabel = new JLabel("No of Spelling Errors:");
+		spellingErrorCntLabel.setPreferredSize(new java.awt.Dimension(150, 30));
+
+		spellingErrorCnt = new JTextField(6);
+		spellingErrorCnt.setPreferredSize(new java.awt.Dimension(50, 30));
+		optionPanel.add(spellingErrorCntLabel);
+		optionPanel.add(spellingErrorCnt);
+		
 		menuPanel.add(optionPanel, BorderLayout.NORTH);
 
 		//Add text console
