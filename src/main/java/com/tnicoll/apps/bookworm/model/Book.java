@@ -5,6 +5,7 @@ import java.util.Scanner;
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Multiset;
 import com.tnicoll.apps.bookworm.util.BookStats;
+import com.tnicoll.apps.bookworm.util.Dictionary;
 
 
 
@@ -33,13 +34,15 @@ public class Book {
 		stats = new BookStats();
 		words = HashMultiset.create();
 		stats.setSentence_count(countSentences(content));
+		stats.setCharacter_count(content.length());
 		content = stripPunctuation(content);
 		Scanner lineScanner = new Scanner(content);
-		int paragraph_count = 0, word_count=0;
+		int paragraph_count = 0, word_count=0, linecount=0, spelling_error_count=0;
 
 		while(lineScanner.hasNextLine())
 		{
 			String temp = lineScanner.nextLine();
+			linecount++;
 			if(!temp.equals(""))
 			{
 				paragraph_count++;
@@ -48,6 +51,11 @@ public class Book {
 				{
 					
 					String s = stripPunctuation(wordScanner.next());
+					
+					if(!Dictionary.isInDictionary(s)){
+						spelling_error_count++;
+						System.out.println(s);
+					}
 					words.add(s);
 					word_count++;
 				}
@@ -56,6 +64,8 @@ public class Book {
 		stats.setParagraph_count(paragraph_count);
 		stats.setWord_count(word_count);
 		stats.setAvg_paragraph_word_count(word_count/paragraph_count);
+		stats.setLines(linecount);
+		stats.setSpelling_error_count(spelling_error_count);
 		
 		return words;
 	}

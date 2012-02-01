@@ -54,7 +54,7 @@ public class BookPanel extends JPanel{
 	private JTextField filesize;
 	private JTextField characterCnt;
 	private JTextField spellingErrorCnt;
-
+	private JTextField lineCnt;
 
 	public JTextField getParagraphCnt() {
 		return paragraphCnt;
@@ -86,6 +86,9 @@ public class BookPanel extends JPanel{
 	}
 	public void setSpellingErrorCnt(int spellingErrorCnt) {
 		this.spellingErrorCnt.setText(Integer.toString(spellingErrorCnt));
+	}
+	public void setLineCnt(int lineCnt) {
+		this.lineCnt.setText(Integer.toString(lineCnt));
 	}
 
 	public BookPanel(int width, int height)
@@ -240,6 +243,14 @@ public class BookPanel extends JPanel{
 		spellingErrorCnt.setPreferredSize(new java.awt.Dimension(50, 30));
 		optionPanel.add(spellingErrorCntLabel);
 		optionPanel.add(spellingErrorCnt);
+		
+		JLabel lineCntLabel = new JLabel("No of lines:");
+		lineCntLabel.setPreferredSize(new java.awt.Dimension(130, 30));
+
+		lineCnt = new JTextField(6);
+		lineCnt.setPreferredSize(new java.awt.Dimension(50, 30));
+		optionPanel.add(lineCntLabel);
+		optionPanel.add(lineCnt);
 		
 		menuPanel.add(optionPanel, BorderLayout.NORTH);
 

@@ -11,7 +11,16 @@ public class BookStats {
 	private int filesize;
 	private int character_count;
 	private int spelling_error_count;
+	private int lines;
 	
+	public int getLines() {
+		return lines;
+	}
+
+	public void setLines(int lines) {
+		this.lines = lines;
+	}
+
 	public int getParagraph_count() {
 		return paragraph_count;
 	}

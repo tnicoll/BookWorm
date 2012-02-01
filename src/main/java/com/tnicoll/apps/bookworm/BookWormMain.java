@@ -238,6 +238,9 @@ public class BookWormMain extends javax.swing.JFrame
 			bp.setAvgParagraphWordCnt(stats.getAvg_paragraph_word_count());
 			bp.setFilesize(file.length());
 			bp.setSentenceCnt(stats.getSentence_count());
+			bp.setCharacterCnt(stats.getCharacter_count());
+			bp.setLineCnt(stats.getLines());
+			bp.setSpellingErrorCnt(stats.getSpelling_error_count());
 			tabbedPane.addTab(file.getName(),bp);
 
 		}
