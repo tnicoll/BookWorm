@@ -15,7 +15,7 @@ public class Book {
 	 * Contains all the information about a book
 	 */
 	//private Map<Word, MutableInt> words;
-	private HashMultiset <String>words; 
+	private HashMultiset <Word>words; 
 	
 	
 	public BookStats stats;
@@ -29,7 +29,7 @@ public class Book {
 		this.stats = stats;
 	}
 
-	public Multiset <String>readBook(String content)
+	public Multiset <Word>readBook(String content)
 	{
 		stats = new BookStats();
 		words = HashMultiset.create();
@@ -50,10 +50,11 @@ public class Book {
 				while(wordScanner.hasNext())
 				{
 					
-					String s = stripPunctuation(wordScanner.next());
+					Word s = new Word(stripPunctuation(wordScanner.next()));
 					
-					if(!Dictionary.isInDictionary(s)){
+					if(!Dictionary.isInDictionary(s.getElement())){
 						spelling_error_count++;
+						s.setRecognised(false);
 						System.out.println(s);
 					}
 					words.add(s);

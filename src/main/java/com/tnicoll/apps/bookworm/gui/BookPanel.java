@@ -26,6 +26,7 @@ import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
@@ -105,8 +106,8 @@ public class BookPanel extends JPanel{
 		add(searchPanel, BorderLayout.WEST);
 
 		///Add Word Table
-		Object []columnNames = {"Word", "Count"};
-		Object [][] data = {{"",new Integer(0)}};;
+		Object []columnNames = {"Word", "Count","Recognised"};
+		Object [][] data = {{"",new Integer(0),new Boolean(false)}};;
 		model = new BookModel(data, columnNames);
 		System.out.println(data[0][0]);
 		wordTable = new JTable(model);
@@ -119,16 +120,9 @@ public class BookPanel extends JPanel{
 				String selectedData = null;
 
 				int[] selectedRow = wordTable.getSelectedRows();
-				int[] selectedColumns = wordTable.getSelectedColumns();
 
-//				for (int i = 0; i < selectedRow.length; i++) {
-//					for (int j = 0; j < selectedColumns.length; j++) {
-//						System.out.println("i: " + i);
-//						System.out.println("j: " + j);
-//						System.out.println("value: " + wordTable.getValueAt(selectedRow[i], selectedColumns[j]));
-						selectedData = (String) wordTable.getValueAt(selectedRow[0], selectedColumns[0]);
-//					}
-//				}
+				selectedData = (String) wordTable.getValueAt(selectedRow[0], 0);
+
 				System.out.println("Selected: " + selectedData);
 			}
 
@@ -351,41 +345,5 @@ public class BookPanel extends JPanel{
 		return serialVersionUID;
 	}
 
-
-	//	public class SelectListener implements ListSelectionListener {
-	//	    JTable table;
-	//
-	//	    // It is necessary to keep the table since it is not possible
-	//	    // to determine the table from the event's source
-	//	    SelectListener(JTable table) {
-	//	        this.table = table;
-	//	    }
-	//	    public void valueChanged(ListSelectionEvent e) {
-	//	        // If cell selection is enabled, both row and column change events are fired
-	//	    	int first = e.getFirstIndex();
-	//            int last = e.getLastIndex();
-	//            //System.out.println("first: " + first);
-	//            System.out.println("last: " + last);
-	////	        if (e.getSource() == table.getSelectionModel()
-	////	              && table.getRowSelectionAllowed()) {
-	////	            // Column selection changed
-	////	            int first = e.getFirstIndex();
-	////	            int last = e.getLastIndex();
-	////	            //System.out.println("first: " + first);
-	////	            System.out.println("last: " + last);
-	////	        } else if (e.getSource() == table.getColumnModel().getSelectionModel()
-	////	               && table.getColumnSelectionAllowed() ){
-	////	            // Row selection changed
-	////	            int first = e.getFirstIndex();
-	////	            int last = e.getLastIndex();
-	////	            System.out.println("first 2: " + first);
-	////	            System.out.println("last 2: " + last);
-	////	        }
-	////
-	////	        if (e.getValueIsAdjusting()) {
-	////	            // The mouse button has not yet been released
-	////	        }
-	//	    }
-	//	}
 
 }

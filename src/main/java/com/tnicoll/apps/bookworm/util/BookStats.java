@@ -85,10 +85,9 @@ public class BookStats {
 		this.spelling_error_count = spelling_error_count;
 	}
 
-	public static int getSpeechCount(String token)
+	public int getSpeechCount()
 	{
-		//to be implemented
-		return 0;
+		return speech_count;
 	}
 	
 }

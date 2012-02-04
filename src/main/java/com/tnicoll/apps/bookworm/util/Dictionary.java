@@ -11,7 +11,7 @@ import java.util.Scanner;
 public final class Dictionary {
 	
 	private static HashSet<String>dict = readDictionary();
-	private static final String filename = "Dictionary.txt";
+	private static final String filename = "Dictionary2.txt";
 	
 	private Dictionary(){}
 

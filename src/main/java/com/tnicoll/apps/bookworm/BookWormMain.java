@@ -20,6 +20,7 @@ import com.google.common.collect.Multiset;
 import com.google.common.collect.Multiset.Entry;
 import com.tnicoll.apps.bookworm.gui.BookPanel;
 import com.tnicoll.apps.bookworm.model.Book;
+import com.tnicoll.apps.bookworm.model.Word;
 import com.tnicoll.apps.bookworm.util.BookStats;
 
 
@@ -211,20 +212,22 @@ public class BookWormMain extends javax.swing.JFrame
 			bp.setConsoleText(content);
 
 			Book b = new Book();
-			Multiset <String> words = b.readBook(content);
+			Multiset <Word> words = b.readBook(content);
 
 			//String []columnNames = {"Word", "Count"};
-			Object [][] data = new Object [words.size()][2];
+			Object [][] data = new Object [words.size()][3];
 			Object []columnNames = {"Word", "Count"};
 
 			BookModel model = bp.getModel();
 
-			for(Entry<String> entry : words.entrySet())
+			for(Entry<Word> entry : words.entrySet())
 			{
-				data[i][0]=entry.getElement();
+				data[i][0]=entry.getElement().getElement();
 				data[i][1]=entry.getCount();
-				model.setValueAt(entry.getElement(), i, 0);
+				data[i][2]=entry.getElement().isRecognised();
+				model.setValueAt(entry.getElement().getElement(), i, 0);
 				model.setValueAt(entry.getCount(), i, 1);
+				model.setValueAt(entry.getElement().isRecognised(), i, 2);
 				i++;
 				
 				if(i<words.entrySet().size())
