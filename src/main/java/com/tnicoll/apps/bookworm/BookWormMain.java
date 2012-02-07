@@ -244,6 +244,7 @@ public class BookWormMain extends javax.swing.JFrame
 			bp.setCharacterCnt(stats.getCharacter_count());
 			bp.setLineCnt(stats.getLines());
 			bp.setSpellingErrorCnt(stats.getSpelling_error_count());
+			bp.setSpeechCnt(stats.getSpeech_count());
 			tabbedPane.addTab(file.getName(),bp);
 
 		}

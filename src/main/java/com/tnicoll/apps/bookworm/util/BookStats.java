@@ -84,10 +84,5 @@ public class BookStats {
 	public void setSpelling_error_count(int spelling_error_count) {
 		this.spelling_error_count = spelling_error_count;
 	}
-
-	public int getSpeechCount()
-	{
-		return speech_count;
-	}
 	
 }

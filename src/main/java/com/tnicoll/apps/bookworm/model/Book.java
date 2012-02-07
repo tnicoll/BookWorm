@@ -1,6 +1,8 @@
 package com.tnicoll.apps.bookworm.model;
 
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Multiset;
@@ -35,6 +37,7 @@ public class Book {
 		words = HashMultiset.create();
 		stats.setSentence_count(countSentences(content));
 		stats.setCharacter_count(content.length());
+		stats.setSpeech_count(countQuotes(content));
 		content = stripPunctuation(content);
 		Scanner lineScanner = new Scanner(content);
 		int paragraph_count = 0, word_count=0, linecount=0, spelling_error_count=0;
@@ -100,4 +103,15 @@ public class Book {
 			return token;
 	}
 	
+	public int countQuotes(String content){
+		int count = 0;
+		Pattern p = Pattern.compile("['’\"]\\s");
+		Matcher m = p.matcher(content);
+		while(m.find()){
+			count++;
+		}
+		return count;
+	}
+	
+	 
 }
