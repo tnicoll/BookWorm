@@ -58,7 +58,6 @@ public class Book {
 					if(!Dictionary.isInDictionary(s.getElement())){
 						spelling_error_count++;
 						s.setRecognised(false);
-						System.out.println(s);
 					}
 					words.add(s);
 					word_count++;
@@ -97,10 +96,14 @@ public class Book {
 
 	public String stripPunctuation(String token)
 	{
-		if(token.substring(token.length()-1).matches("\\p{Punct}+"))
-			return token.substring(0, token.length()-1);
-		else
-			return token;
+		Pattern p = Pattern.compile("^\\p{P}*(.*?)\\p{P}*$");
+	    Matcher m = p.matcher(token);
+	    
+	    if(m.matches())
+	    	return m.group(1);
+	    else
+	    	return token;
+	    
 	}
 	
 	public int countQuotes(String content){
