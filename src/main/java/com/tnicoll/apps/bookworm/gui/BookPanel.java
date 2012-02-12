@@ -32,6 +32,7 @@ import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
 import com.tnicoll.apps.bookworm.BookModel;
+import com.tnicoll.apps.bookworm.model.Word;
 
 public class BookPanel extends JPanel{
 
@@ -57,6 +58,11 @@ public class BookPanel extends JPanel{
 	private JTextField characterCnt;
 	private JTextField spellingErrorCnt;
 	private JTextField lineCnt;
+	private JTextField no_of_nounsCnt;
+	private JTextField no_of_verbsCnt;
+	private JTextField no_of_adverbsCnt;
+	private JTextField no_of_adjectivesCnt;
+	private JTextField no_of_unknownCnt;
 
 	public JTextField getParagraphCnt() {
 		return paragraphCnt;
@@ -92,7 +98,21 @@ public class BookPanel extends JPanel{
 	public void setLineCnt(int lineCnt) {
 		this.lineCnt.setText(Integer.toString(lineCnt));
 	}
-
+	public void setNo_of_nounsCnt(int no_of_nounsCnt) {
+		this.no_of_nounsCnt.setText(Integer.toString(no_of_nounsCnt));
+	}
+	public void setNo_of_verbsCnt(int no_of_verbsCnt) {
+		this.no_of_verbsCnt.setText(Integer.toString(no_of_verbsCnt));
+	}
+	public void setNo_of_adverbsCnt(int no_of_adverbsCnt) {
+		this.no_of_adverbsCnt.setText(Integer.toString(no_of_adverbsCnt));
+	}
+	public void setNo_of_adjectivesCnt(int no_of_adjectivesCnt) {
+		this.no_of_adjectivesCnt.setText(Integer.toString(no_of_adjectivesCnt));
+	}
+	public void setNo_of_unknownCnt(int no_of_unknownCnt) {
+		this.no_of_unknownCnt.setText(Integer.toString(no_of_unknownCnt));
+	}
 	public BookPanel(int width, int height)
 	{
 		searchPanel = new JPanel();
@@ -107,8 +127,8 @@ public class BookPanel extends JPanel{
 		add(searchPanel, BorderLayout.WEST);
 
 		///Add Word Table
-		Object []columnNames = {"Word", "Count","Recognised"};
-		Object [][] data = {{"",new Integer(0),new Boolean(false)}};;
+		Object []columnNames = {"Word", "Count","Recognised", "Type", "Syllables"};
+		Object [][] data = {{"",new Integer(0),new Boolean(false), Word.WordType.U, ""}};;
 		model = new BookModel(data, columnNames);
 		System.out.println(data[0][0]);
 		wordTable = new JTable(model);
@@ -240,12 +260,52 @@ public class BookPanel extends JPanel{
 		optionPanel.add(spellingErrorCnt);
 		
 		JLabel lineCntLabel = new JLabel("No of lines:");
-		lineCntLabel.setPreferredSize(new java.awt.Dimension(130, 30));
+		lineCntLabel.setPreferredSize(new java.awt.Dimension(120, 30));
 
 		lineCnt = new JTextField(6);
 		lineCnt.setPreferredSize(new java.awt.Dimension(50, 30));
 		optionPanel.add(lineCntLabel);
 		optionPanel.add(lineCnt);
+		
+		JLabel no_of_nounsCntLabel = new JLabel("No of nouns:");
+		no_of_nounsCntLabel.setPreferredSize(new java.awt.Dimension(120, 30));
+
+		no_of_nounsCnt = new JTextField(6);
+		no_of_nounsCnt.setPreferredSize(new java.awt.Dimension(50, 30));
+		optionPanel.add(no_of_nounsCntLabel);
+		optionPanel.add(no_of_nounsCnt);
+		
+		JLabel no_of_verbsCntLabel = new JLabel("No of verbs:");
+		no_of_verbsCntLabel.setPreferredSize(new java.awt.Dimension(120, 30));
+
+		no_of_verbsCnt = new JTextField(6);
+		no_of_verbsCnt.setPreferredSize(new java.awt.Dimension(50, 30));
+		optionPanel.add(no_of_verbsCntLabel);
+		optionPanel.add(no_of_verbsCnt);
+		
+		JLabel no_of_adverbsCntLabel = new JLabel("No of adverbs:");
+		no_of_adverbsCntLabel.setPreferredSize(new java.awt.Dimension(120, 30));
+
+		no_of_adverbsCnt = new JTextField(6);
+		no_of_adverbsCnt.setPreferredSize(new java.awt.Dimension(50, 30));
+		optionPanel.add(no_of_adverbsCntLabel);
+		optionPanel.add(no_of_adverbsCnt);
+		
+		JLabel no_of_adjectivesCntLabel = new JLabel("No of adjectives:");
+		no_of_adjectivesCntLabel.setPreferredSize(new java.awt.Dimension(120, 30));
+
+		no_of_adjectivesCnt = new JTextField(6);
+		no_of_adjectivesCnt.setPreferredSize(new java.awt.Dimension(50, 30));
+		optionPanel.add(no_of_adjectivesCntLabel);
+		optionPanel.add(no_of_adjectivesCnt);
+		
+		JLabel no_of_unknownCntLabel = new JLabel("No of unknown types:");
+		no_of_unknownCntLabel.setPreferredSize(new java.awt.Dimension(120, 30));
+
+		no_of_unknownCnt = new JTextField(6);
+		no_of_unknownCnt.setPreferredSize(new java.awt.Dimension(50, 30));
+		optionPanel.add(no_of_unknownCntLabel);
+		optionPanel.add(no_of_unknownCnt);
 		
 		menuPanel.add(optionPanel, BorderLayout.NORTH);
 

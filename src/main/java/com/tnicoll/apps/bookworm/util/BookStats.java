@@ -12,6 +12,11 @@ public class BookStats {
 	private int character_count;
 	private int spelling_error_count;
 	private int lines;
+	private int no_of_nouns;
+	private int no_of_verbs;
+	private int no_of_adverbs;
+	private int no_of_adjectives;
+	private int no_of_unknown;
 	
 	public int getLines() {
 		return lines;
@@ -83,6 +88,46 @@ public class BookStats {
 
 	public void setSpelling_error_count(int spelling_error_count) {
 		this.spelling_error_count = spelling_error_count;
+	}
+
+	public int getNo_of_nouns() {
+		return no_of_nouns;
+	}
+
+	public void setNo_of_nouns(int no_of_nouns) {
+		this.no_of_nouns = no_of_nouns;
+	}
+
+	public int getNo_of_verbs() {
+		return no_of_verbs;
+	}
+
+	public void setNo_of_verbs(int no_of_verbs) {
+		this.no_of_verbs = no_of_verbs;
+	}
+
+	public int getNo_of_adverbs() {
+		return no_of_adverbs;
+	}
+
+	public void setNo_of_adverbs(int no_of_adverbs) {
+		this.no_of_adverbs = no_of_adverbs;
+	}
+
+	public int getNo_of_adjectives() {
+		return no_of_adjectives;
+	}
+
+	public void setNo_of_adjectives(int no_of_adjectives) {
+		this.no_of_adjectives = no_of_adjectives;
+	}
+
+	public int getNo_of_unknown() {
+		return no_of_unknown;
+	}
+
+	public void setNo_of_unknown(int no_of_unknown) {
+		this.no_of_unknown = no_of_unknown;
 	}
 	
 }

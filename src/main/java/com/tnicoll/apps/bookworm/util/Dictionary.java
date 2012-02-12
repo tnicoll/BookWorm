@@ -1,23 +1,25 @@
 package com.tnicoll.apps.bookworm.util;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.InputStream;
-import java.util.HashSet;
+import java.util.HashMap;
+
 import java.util.Scanner;
+import java.util.StringTokenizer;
+
+import com.tnicoll.apps.bookworm.model.Word;
 
 public final class Dictionary {
 	
-	private static HashSet<String>dict = readDictionary();
-	private static final String filename = "Dictionary2.txt";
+	private static HashMap<String, Word>dict = readDictionary();
+	private static final String filename = "Dictionary.txt";
 	
 	private Dictionary(){}
 
-	private static HashSet<String> readDictionary() {
+	private static HashMap<String, Word> readDictionary() {
 
-		HashSet<String>d = new HashSet<String>();
+		HashMap<String, Word>words = new HashMap<String, Word>();
 		
 		File file = new File(filename);
 
@@ -26,9 +28,26 @@ public final class Dictionary {
 			while(lineScanner.hasNextLine())
 			{
 				String temp = lineScanner.nextLine();
-				d.add(temp);
+				StringTokenizer st = new StringTokenizer(temp, "|");
+				while(st.hasMoreTokens()){
+					
+					Word w = new Word();
+					
+					w.setElement(st.nextToken());
+					try{
+					w.setSyllables(Integer.parseInt(st.nextToken()));
+					}catch(NullPointerException | NumberFormatException n){
+						w.setSyllables(-1);
+					}
+					try{
+					w.setType(Word.WordType.valueOf(st.nextToken()));
+					}catch(NullPointerException | IllegalArgumentException ill){
+						w.setType(Word.WordType.U);
+					}
+					words.put(w.getElement(), w);
+				}
 			}
-			return d;
+			return words;
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -39,7 +58,13 @@ public final class Dictionary {
 	}
 	
 	public static boolean isInDictionary(String word){
-		return(dict.contains(word.toLowerCase()));
+		return(dict.containsKey(word));
+//		return(dict.containsKey(key)(word.toLowerCase()));
+	}
+	
+	public static Word getWord(String word){
+		return(dict.get(word));
+		
 	}
 
 }

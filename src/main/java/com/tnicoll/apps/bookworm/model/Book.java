@@ -40,7 +40,8 @@ public class Book {
 		stats.setSpeech_count(countQuotes(content));
 		content = stripPunctuation(content);
 		Scanner lineScanner = new Scanner(content);
-		int paragraph_count = 0, word_count=0, linecount=0, spelling_error_count=0;
+		int paragraph_count = 0, word_count=0, linecount=0, spelling_error_count=0, no_of_nouns=0,
+				no_of_verbs=0, no_of_adverbs=0, no_of_adjectives=0, no_of_unknown=0;
 
 		while(lineScanner.hasNextLine())
 		{
@@ -54,11 +55,41 @@ public class Book {
 				{
 					
 					Word s = new Word(stripPunctuation(wordScanner.next()));
-					
-					if(!Dictionary.isInDictionary(s.getElement())){
+					Word lookup = Dictionary.getWord(s.getElement());
+					if(lookup!=null){
+						s.setRecognised(true);
+						s.setSyllables(lookup.getSyllables());
+						s.setType(lookup.getType());
+						
+					}
+					else{
 						spelling_error_count++;
 						s.setRecognised(false);
+						s.setType(Word.WordType.U);
+						s.setSyllables(-1);
 					}
+					
+					switch(s.getType()){
+					case N:
+						no_of_nouns++;
+						break;
+					case V:
+						no_of_verbs++;
+						break;
+					case ADJ:
+						no_of_adjectives++;
+						break;
+					case ADV:
+						no_of_adverbs++;
+						break;
+					default:
+						no_of_unknown++;
+						break;
+					}
+//					if(!Dictionary.isInDictionary(s.getElement())){
+//						spelling_error_count++;
+//						s.setRecognised(false);
+//					}
 					words.add(s);
 					word_count++;
 				}
@@ -69,6 +100,11 @@ public class Book {
 		stats.setAvg_paragraph_word_count(word_count/paragraph_count);
 		stats.setLines(linecount);
 		stats.setSpelling_error_count(spelling_error_count);
+		stats.setNo_of_adjectives(no_of_adjectives);
+		stats.setNo_of_adverbs(no_of_adverbs);
+		stats.setNo_of_nouns(no_of_nouns);
+		stats.setNo_of_verbs(no_of_verbs);
+		stats.setNo_of_unknown(no_of_unknown);
 		
 		return words;
 	}

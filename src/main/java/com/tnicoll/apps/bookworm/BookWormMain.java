@@ -215,7 +215,7 @@ public class BookWormMain extends javax.swing.JFrame
 			Multiset <Word> words = b.readBook(content);
 
 			//String []columnNames = {"Word", "Count"};
-			Object [][] data = new Object [words.size()][3];
+			Object [][] data = new Object [words.size()][5];
 			Object []columnNames = {"Word", "Count"};
 
 			BookModel model = bp.getModel();
@@ -225,9 +225,16 @@ public class BookWormMain extends javax.swing.JFrame
 				data[i][0]=entry.getElement().getElement();
 				data[i][1]=entry.getCount();
 				data[i][2]=entry.getElement().isRecognised();
+				data[i][3]=entry.getElement().getType();
+				String syllable = "";
+				if(entry.getElement().getSyllables()!=-1)
+					syllable=Integer.toString(entry.getElement().getSyllables());
+				data[i][4]=syllable;
 				model.setValueAt(entry.getElement().getElement(), i, 0);
 				model.setValueAt(entry.getCount(), i, 1);
 				model.setValueAt(entry.getElement().isRecognised(), i, 2);
+				model.setValueAt(entry.getElement().getType(), i, 3);
+				model.setValueAt(syllable, i, 4);
 				i++;
 				
 				if(i<words.entrySet().size())
@@ -245,6 +252,11 @@ public class BookWormMain extends javax.swing.JFrame
 			bp.setLineCnt(stats.getLines());
 			bp.setSpellingErrorCnt(stats.getSpelling_error_count());
 			bp.setSpeechCnt(stats.getSpeech_count());
+			bp.setNo_of_adjectivesCnt(stats.getNo_of_adjectives());
+			bp.setNo_of_adverbsCnt(stats.getNo_of_adverbs());
+			bp.setNo_of_nounsCnt(stats.getNo_of_nouns());
+			bp.setNo_of_verbsCnt(stats.getNo_of_verbs());
+			bp.setNo_of_unknownCnt(stats.getNo_of_unknown());
 			tabbedPane.addTab(file.getName(),bp);
 
 		}

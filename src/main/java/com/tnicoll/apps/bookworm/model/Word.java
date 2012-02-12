@@ -1,9 +1,15 @@
 package com.tnicoll.apps.bookworm.model;
 
-public class Word{
+public class Word implements Comparable<Object>{
 
-	String element;
-	boolean isRecognised;
+	private String element;
+	private boolean isRecognised;
+	private int syllables;
+	private WordType type;
+	
+	public enum WordType {
+	    N, V, ADJ, ADV, U 
+	}
 	
 	public boolean isRecognised() {
 		return isRecognised;
@@ -20,6 +26,13 @@ public class Word{
 		this.element = element;
 		this.isRecognised = true;
 	}
+	public Word(String element, int syllables, WordType type) {
+		super();
+		this.element = element;
+		this.isRecognised = true;
+		this.syllables = syllables;
+		this.type = type;
+	}
 
 	public String getElement() {
 		return element;
@@ -30,6 +43,22 @@ public class Word{
 	}
 	
 	
+
+	public int getSyllables() {
+		return syllables;
+	}
+
+	public void setSyllables(int syllables) {
+		this.syllables = syllables;
+	}
+
+	public WordType getType() {
+		return type;
+	}
+
+	public void setType(WordType type) {
+		this.type = type;
+	}
 
 	@Override
 	public String toString() {
@@ -59,6 +88,16 @@ public class Word{
 		} else if (!element.equals(other.element))
 			return false;
 		return true;
+	}
+
+//	@Override
+//	public int compareTo(Word o) {
+//		return this.getElement().compareTo(o.getElement());
+//	}
+
+	@Override
+	public int compareTo(Object o) {
+		return(this.getElement().compareTo(((Word)o).getElement()));
 	}
 	
 	
