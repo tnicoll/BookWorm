@@ -43,14 +43,15 @@ public class Book {
 		int paragraph_count = 0, word_count=0, linecount=0, spelling_error_count=0, no_of_nouns=0,
 				no_of_verbs=0, no_of_adverbs=0, no_of_adjectives=0, no_of_unknown=0;
 
+		StringBuilder sb = new StringBuilder();
 		while(lineScanner.hasNextLine())
 		{
-			String temp = lineScanner.nextLine();
+			sb = new StringBuilder(lineScanner.nextLine());
 			linecount++;
-			if(!temp.equals(""))
+			if(!sb.toString().equals(""))
 			{
 				paragraph_count++;
-				Scanner wordScanner = new Scanner(temp);
+				Scanner wordScanner = new Scanner(sb.toString());
 				while(wordScanner.hasNext())
 				{
 					

@@ -130,7 +130,7 @@ public class BookPanel extends JPanel{
 		Object []columnNames = {"Word", "Count","Recognised", "Type", "Syllables"};
 		Object [][] data = {{"",new Integer(0),new Boolean(false), Word.WordType.U, ""}};;
 		model = new BookModel(data, columnNames);
-		System.out.println(data[0][0]);
+
 		wordTable = new JTable(model);
 		wordTable.setRowSelectionAllowed(true);
 		ListSelectionModel cellSelectionModel = wordTable.getSelectionModel();

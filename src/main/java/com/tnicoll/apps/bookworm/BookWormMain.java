@@ -60,6 +60,7 @@ public class BookWormMain extends javax.swing.JFrame
 
 
 	public static void main(String[] args) {
+
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		} catch (ClassNotFoundException | InstantiationException
@@ -189,22 +190,17 @@ public class BookWormMain extends javax.swing.JFrame
 		File file = fc.getSelectedFile();
 		int i=0;
 		try (InputStream stream = new FileInputStream(file);){
-			System.out.println("stream loaded");
+
 			handler = new BodyContentHandler(-1);
 			metadata = new Metadata();
 			parser = new AutoDetectParser();
-			System.out.println("before parser");
+
 			context = new ParseContext();
 
 			parser.parse(stream, handler, metadata, context);
 
-			System.out.println("after parser");
 			String content = handler.toString();
-			System.out.println("got content");
-			System.out.println("Mime: " + metadata.get(Metadata.CONTENT_TYPE));
-			//        System.out.println("Title: " + metadata.get(Metadata.TITLE));
-			//        System.out.println("Word count: " + metadata.get(Metadata.WORD_COUNT));
-			//        System.out.println("Paragraph count: " +  metadata.get(Metadata.PARAGRAPH_COUNT));
+			
 
 			BookPanel bp = new BookPanel(width-20, height-40);
 
@@ -212,33 +208,32 @@ public class BookWormMain extends javax.swing.JFrame
 			bp.setConsoleText(content);
 
 			Book b = new Book();
+
 			Multiset <Word> words = b.readBook(content);
 
-			//String []columnNames = {"Word", "Count"};
 			Object [][] data = new Object [words.size()][5];
-			Object []columnNames = {"Word", "Count"};
 
 			BookModel model = bp.getModel();
-
+			
+	        StringBuffer syllable = new StringBuffer("");
+	        
+	        model.setRowCount(words.entrySet().size());
 			for(Entry<Word> entry : words.entrySet())
 			{
 				data[i][0]=entry.getElement().getElement();
 				data[i][1]=entry.getCount();
 				data[i][2]=entry.getElement().isRecognised();
 				data[i][3]=entry.getElement().getType();
-				String syllable = "";
-				if(entry.getElement().getSyllables()!=-1)
-					syllable=Integer.toString(entry.getElement().getSyllables());
-				data[i][4]=syllable;
-				model.setValueAt(entry.getElement().getElement(), i, 0);
-				model.setValueAt(entry.getCount(), i, 1);
-				model.setValueAt(entry.getElement().isRecognised(), i, 2);
-				model.setValueAt(entry.getElement().getType(), i, 3);
-				model.setValueAt(syllable, i, 4);
-				i++;
 				
-				if(i<words.entrySet().size())
-					model.addRow(data);
+				if(entry.getElement().getSyllables()!=-1)
+					syllable= new StringBuffer(Integer.toString(entry.getElement().getSyllables()));
+				data[i][4]=syllable;
+				model.setValueAt(data[i][0], i, 0);
+				model.setValueAt(data[i][1], i, 1);
+				model.setValueAt(data[i][2], i, 2);
+				model.setValueAt(data[i][3], i, 3);
+				model.setValueAt(data[i][4], i, 4);
+				i++;
 			}
 
 			bp.setModel(model);
