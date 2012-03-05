@@ -2,18 +2,9 @@ package com.tnicoll.apps.bookworm.gui;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
-import java.awt.GraphicsConfiguration;
-import java.awt.GridBagLayout;
-import java.awt.GridLayout;
-import java.awt.Insets;
-import java.awt.Rectangle;
-import java.awt.Toolkit;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.util.regex.Pattern;
 
 import javax.swing.BorderFactory;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -22,12 +13,11 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.RowFilter;
+import javax.swing.SpringLayout;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
@@ -46,6 +36,9 @@ public class BookPanel extends JPanel{
 	private JPanel searchPanel;
 	private JScrollPane wordScroll;
 	private JTable wordTable;
+//	private JScrollPane statScroll;
+//	private JTable statTable;
+//	private BookModel statModel;
 	private BookModel model;
 	private JTextArea console;
 	private JScrollPane consolePane;
@@ -67,6 +60,9 @@ public class BookPanel extends JPanel{
 	public JTextField getParagraphCnt() {
 		return paragraphCnt;
 	}
+
+
+
 
 
 
@@ -190,122 +186,98 @@ public class BookPanel extends JPanel{
 		menuPanel.setPreferredSize(new java.awt.Dimension(width/2, height));
 
 		//Add Right Hand Top Option Panel
-		optionPanel = new JPanel();
+		optionPanel = new JPanel(new SpringLayout());
 		optionPanel.setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
 		optionPanel.setPreferredSize(new java.awt.Dimension((width/2)-10, (height/2)) );
-
-		int textbox_x=100, textbox_y=30;
-		JLabel paragraphCntLabel = new JLabel("No of Paragraphs:");
-		paragraphCntLabel.setPreferredSize(new java.awt.Dimension(textbox_x, textbox_y));
-		paragraphCnt = new JTextField(6);
-		paragraphCnt.setPreferredSize(new java.awt.Dimension(50, 30));
-		paragraphCnt.setBounds(textbox_x, textbox_y, 20, 5);
+		
+		JLabel paragraphCntLabel = new JLabel("No of Paragraphs", JLabel.TRAILING);
 		optionPanel.add(paragraphCntLabel);
+		paragraphCnt = new JTextField(6);
+		paragraphCntLabel.setLabelFor(paragraphCnt);
 		optionPanel.add(paragraphCnt);
 		
-		JLabel wordCntLabel = new JLabel("Word Count:");
-		wordCntLabel.setPreferredSize(new java.awt.Dimension(80, 30));
-
-		wordCnt = new JTextField(6);
-		wordCnt.setPreferredSize(new java.awt.Dimension(50, 30));
+		JLabel wordCntLabel = new JLabel("Word Count", JLabel.TRAILING);
 		optionPanel.add(wordCntLabel);
+		wordCnt = new JTextField(6);
+		wordCntLabel.setLabelFor(wordCnt);		
 		optionPanel.add(wordCnt);
 		
-		JLabel avgParagraphWordCntLabel = new JLabel("Average Word Count per Paragraph:");
-		avgParagraphWordCntLabel.setPreferredSize(new java.awt.Dimension(180, 30));
-
-		avgParagraphWordCnt = new JTextField(6);
-		avgParagraphWordCnt.setPreferredSize(new java.awt.Dimension(50, 30));
+		JLabel avgParagraphWordCntLabel = new JLabel("Average Word Count per Paragraph", JLabel.TRAILING);
 		optionPanel.add(avgParagraphWordCntLabel);
+		avgParagraphWordCnt = new JTextField(6);
+		avgParagraphWordCntLabel.setLabelFor(avgParagraphWordCnt);		
 		optionPanel.add(avgParagraphWordCnt);
 		
-		JLabel sentenceCntLabel = new JLabel("No of Sentences:");
-		sentenceCntLabel.setPreferredSize(new java.awt.Dimension(130, 30));
-
-		sentenceCnt = new JTextField(6);
-		sentenceCnt.setPreferredSize(new java.awt.Dimension(50, 30));
+		JLabel sentenceCntLabel = new JLabel("No of Sentences", JLabel.TRAILING);
 		optionPanel.add(sentenceCntLabel);
+		sentenceCnt = new JTextField(6);
+		sentenceCntLabel.setLabelFor(sentenceCnt);		
 		optionPanel.add(sentenceCnt);
 		
-		JLabel speechCntLabel = new JLabel("No of lines of Dialogue:");
-		speechCntLabel.setPreferredSize(new java.awt.Dimension(150, 30));
-
-		speechCnt = new JTextField(6);
-		speechCnt.setPreferredSize(new java.awt.Dimension(50, 30));
+		JLabel speechCntLabel = new JLabel("No of lines of Dialogue", JLabel.TRAILING);
 		optionPanel.add(speechCntLabel);
+		speechCnt = new JTextField(6);
+		speechCntLabel.setLabelFor(speechCnt);		
 		optionPanel.add(speechCnt);
 		
-		JLabel filesizeLabel = new JLabel("Filesize:");
-		filesizeLabel.setPreferredSize(new java.awt.Dimension(70, 30));
-
-		filesize = new JTextField(6);
-		filesize.setPreferredSize(new java.awt.Dimension(50, 30));
+		JLabel filesizeLabel = new JLabel("Filesize", JLabel.TRAILING);
 		optionPanel.add(filesizeLabel);
+		filesize = new JTextField(6);
+		filesizeLabel.setLabelFor(filesize);		
 		optionPanel.add(filesize);
 		
-		JLabel characterCntLabel = new JLabel("No of characters:");
-		characterCntLabel.setPreferredSize(new java.awt.Dimension(120, 30));
-
-		characterCnt = new JTextField(6);
-		characterCnt.setPreferredSize(new java.awt.Dimension(50, 30));
+		JLabel characterCntLabel = new JLabel("No of characters", JLabel.TRAILING);
 		optionPanel.add(characterCntLabel);
+		characterCnt = new JTextField(6);
+		characterCntLabel.setLabelFor(characterCnt);		
 		optionPanel.add(characterCnt);
 		
-		JLabel spellingErrorCntLabel = new JLabel("No of Spelling Errors:");
-		spellingErrorCntLabel.setPreferredSize(new java.awt.Dimension(150, 30));
-
-		spellingErrorCnt = new JTextField(6);
-		spellingErrorCnt.setPreferredSize(new java.awt.Dimension(50, 30));
+		JLabel spellingErrorCntLabel = new JLabel("No of Spelling Errors", JLabel.TRAILING);
 		optionPanel.add(spellingErrorCntLabel);
+		spellingErrorCnt = new JTextField(6);
+		spellingErrorCntLabel.setLabelFor(spellingErrorCnt);		
 		optionPanel.add(spellingErrorCnt);
 		
-		JLabel lineCntLabel = new JLabel("No of lines:");
-		lineCntLabel.setPreferredSize(new java.awt.Dimension(120, 30));
-
-		lineCnt = new JTextField(6);
-		lineCnt.setPreferredSize(new java.awt.Dimension(50, 30));
+		JLabel lineCntLabel = new JLabel("No of lines", JLabel.TRAILING);
 		optionPanel.add(lineCntLabel);
+		lineCnt = new JTextField(6);
+		lineCntLabel.setLabelFor(lineCnt);		
 		optionPanel.add(lineCnt);
 		
-		JLabel no_of_nounsCntLabel = new JLabel("No of nouns:");
-		no_of_nounsCntLabel.setPreferredSize(new java.awt.Dimension(120, 30));
-
-		no_of_nounsCnt = new JTextField(6);
-		no_of_nounsCnt.setPreferredSize(new java.awt.Dimension(50, 30));
+		JLabel no_of_nounsCntLabel = new JLabel("No of nouns", JLabel.TRAILING);
 		optionPanel.add(no_of_nounsCntLabel);
+		no_of_nounsCnt = new JTextField(6);
+		no_of_nounsCntLabel.setLabelFor(no_of_nounsCnt);		
 		optionPanel.add(no_of_nounsCnt);
 		
-		JLabel no_of_verbsCntLabel = new JLabel("No of verbs:");
-		no_of_verbsCntLabel.setPreferredSize(new java.awt.Dimension(120, 30));
-
-		no_of_verbsCnt = new JTextField(6);
-		no_of_verbsCnt.setPreferredSize(new java.awt.Dimension(50, 30));
+		JLabel no_of_verbsCntLabel = new JLabel("No of verbs", JLabel.TRAILING);
 		optionPanel.add(no_of_verbsCntLabel);
+		no_of_verbsCnt = new JTextField(6);
+		no_of_verbsCntLabel.setLabelFor(no_of_verbsCnt);		
 		optionPanel.add(no_of_verbsCnt);
 		
-		JLabel no_of_adverbsCntLabel = new JLabel("No of adverbs:");
-		no_of_adverbsCntLabel.setPreferredSize(new java.awt.Dimension(120, 30));
-
-		no_of_adverbsCnt = new JTextField(6);
-		no_of_adverbsCnt.setPreferredSize(new java.awt.Dimension(50, 30));
+		JLabel no_of_adverbsCntLabel = new JLabel("No of adverbs", JLabel.TRAILING);
 		optionPanel.add(no_of_adverbsCntLabel);
+		no_of_adverbsCnt = new JTextField(6);
+		no_of_adverbsCntLabel.setLabelFor(no_of_adverbsCnt);		
 		optionPanel.add(no_of_adverbsCnt);
 		
-		JLabel no_of_adjectivesCntLabel = new JLabel("No of adjectives:");
-		no_of_adjectivesCntLabel.setPreferredSize(new java.awt.Dimension(120, 30));
-
-		no_of_adjectivesCnt = new JTextField(6);
-		no_of_adjectivesCnt.setPreferredSize(new java.awt.Dimension(50, 30));
+		JLabel no_of_adjectivesCntLabel = new JLabel("No of adjectives", JLabel.TRAILING);
 		optionPanel.add(no_of_adjectivesCntLabel);
+		no_of_adjectivesCnt = new JTextField(6);
+		no_of_adjectivesCntLabel.setLabelFor(no_of_adjectivesCnt);		
 		optionPanel.add(no_of_adjectivesCnt);
 		
-		JLabel no_of_unknownCntLabel = new JLabel("No of unknown types:");
-		no_of_unknownCntLabel.setPreferredSize(new java.awt.Dimension(120, 30));
-
-		no_of_unknownCnt = new JTextField(6);
-		no_of_unknownCnt.setPreferredSize(new java.awt.Dimension(50, 30));
+		JLabel no_of_unknownCntLabel = new JLabel("No of unknown types", JLabel.TRAILING);
 		optionPanel.add(no_of_unknownCntLabel);
+		no_of_unknownCnt = new JTextField(6);
+		no_of_unknownCntLabel.setLabelFor(no_of_unknownCnt);
 		optionPanel.add(no_of_unknownCnt);
+		
+		SpringUtilities.makeCompactGrid(optionPanel,
+                7, 4, //rows, cols
+                6, 6,        //initX, initY
+                6, 6);
 		
 		menuPanel.add(optionPanel, BorderLayout.NORTH);
 
@@ -322,7 +294,6 @@ public class BookPanel extends JPanel{
 		menuPanel.add(consolePane, BorderLayout.SOUTH);
 		console.setText("");
 	}
-
 
 
 	public JPanel getMenuPanel() {

@@ -164,7 +164,6 @@ public class BookWormMain extends javax.swing.JFrame
 
 				if (returnVal == JFileChooser.APPROVE_OPTION) {
 
-
 					openFile();
 				} else {
 					//Do something else
@@ -190,7 +189,7 @@ public class BookWormMain extends javax.swing.JFrame
 		File file = fc.getSelectedFile();
 		int i=0;
 		try (InputStream stream = new FileInputStream(file);){
-
+		    
 			handler = new BodyContentHandler(-1);
 			metadata = new Metadata();
 			parser = new AutoDetectParser();
@@ -198,10 +197,9 @@ public class BookWormMain extends javax.swing.JFrame
 			context = new ParseContext();
 
 			parser.parse(stream, handler, metadata, context);
-
+			
 			String content = handler.toString();
 			
-
 			BookPanel bp = new BookPanel(width-20, height-40);
 
 
@@ -220,6 +218,7 @@ public class BookWormMain extends javax.swing.JFrame
 	        model.setRowCount(words.entrySet().size());
 			for(Entry<Word> entry : words.entrySet())
 			{
+				
 				data[i][0]=entry.getElement().getElement();
 				data[i][1]=entry.getCount();
 				data[i][2]=entry.getElement().isRecognised();
@@ -234,10 +233,12 @@ public class BookWormMain extends javax.swing.JFrame
 				model.setValueAt(data[i][3], i, 3);
 				model.setValueAt(data[i][4], i, 4);
 				i++;
-			}
 
+			}
+			
 			bp.setModel(model);
 			BookStats stats = b.getStats();
+
 			bp.setParagraphCnt(stats.getParagraph_count());
 			bp.setWordCnt(stats.getWord_count());
 			bp.setAvgParagraphWordCnt(stats.getAvg_paragraph_word_count());
@@ -253,6 +254,7 @@ public class BookWormMain extends javax.swing.JFrame
 			bp.setNo_of_verbsCnt(stats.getNo_of_verbs());
 			bp.setNo_of_unknownCnt(stats.getNo_of_unknown());
 			tabbedPane.addTab(file.getName(),bp);
+			
 
 		}
 
