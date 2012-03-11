@@ -1,8 +1,9 @@
 package com.tnicoll.apps.bookworm.util;
 
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 
 import java.util.Scanner;
@@ -13,7 +14,7 @@ import com.tnicoll.apps.bookworm.model.Word;
 public final class Dictionary {
 	
 	private static HashMap<String, Word>dict = readDictionary();
-	private static final String filename = "Dictionary.txt";
+	private static final String filename = "/Dictionaries/Dictionary.txt";
 	
 	private Dictionary(){}
 
@@ -21,9 +22,8 @@ public final class Dictionary {
 
 		HashMap<String, Word>words = new HashMap<String, Word>();
 		
-		File file = new File(filename);
-
-		try(Scanner lineScanner = new Scanner(new FileReader(file));){
+		try(InputStream is = Dictionary.class.getResourceAsStream(filename);
+				Scanner lineScanner = new Scanner(new InputStreamReader(is))){
 			
 			while(lineScanner.hasNextLine())
 			{
@@ -52,6 +52,10 @@ public final class Dictionary {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return null;
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
 		}
 		
 		
@@ -59,7 +63,6 @@ public final class Dictionary {
 	
 	public static boolean isInDictionary(String word){
 		return(dict.containsKey(word));
-//		return(dict.containsKey(key)(word.toLowerCase()));
 	}
 	
 	public static Word getWord(String word){

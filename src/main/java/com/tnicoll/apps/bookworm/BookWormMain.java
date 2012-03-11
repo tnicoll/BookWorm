@@ -141,14 +141,12 @@ public class BookWormMain extends javax.swing.JFrame
 			exitMenuItem.setText("Exit");
 		}
 
-		helpMenu = new JMenu();
-		toolbar.add(helpMenu);
-		helpMenu.setText("Help");
-		{
-			helpMenuItem = new JMenuItem();
-			helpMenu.add(helpMenuItem);
-			helpMenuItem.setText("Help");
-		}
+//		helpMenu.setText("Help");
+	//	{
+		//	helpMenuItem = new JMenuItem();
+			//helpMenu.add(helpMenuItem);
+		//	helpMenuItem.setText("Help");
+		//}
 
 
 	}
@@ -201,7 +199,6 @@ public class BookWormMain extends javax.swing.JFrame
 			String content = handler.toString();
 			
 			BookPanel bp = new BookPanel(width-20, height-40);
-
 
 			bp.setConsoleText(content);
 

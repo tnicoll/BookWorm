@@ -145,7 +145,7 @@ public class Book {
 	
 	public int countQuotes(String content){
 		int count = 0;
-		Pattern p = Pattern.compile("['’\"]\\s");
+		Pattern p = Pattern.compile("['‘’\"]\\s");
 		Matcher m = p.matcher(content);
 		while(m.find()){
 			count++;
